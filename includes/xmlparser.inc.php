@@ -74,6 +74,13 @@ class Examsly {
 		if (count($this->stack) > 1) {
 			$from = array_pop($this->stack);
 			$to = $this->stack[count($this->stack)-1];
+
+			// added to avoid an error from string to array conversion 
+			// that only resulted in a warning in old php versions
+			if (is_string($this->struct[$to])) {
+				$this->struct[$to] = array();
+			}
+			
 			$this->struct[$to][$from][] = $this->struct[$from];
 			unset($this->struct[$from]);
 		}
