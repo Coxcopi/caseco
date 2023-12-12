@@ -41,7 +41,7 @@ class TMNDataFetcher {
 	 * @return TMNDataFetcher
 	 *        If $nickname is empty, login was not found
 	 */
-	function TMNDataFetcher($login, $extendedInfo) {
+	function __construct($login, $extendedInfo) {
 
 		$this->version = '0.1.7.9';
 		$this->error = '';

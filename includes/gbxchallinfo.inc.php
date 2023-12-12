@@ -27,7 +27,7 @@ class GBXChallengeInfo {
 	 *        If $uid is empty, GBX data couldn't be extracted and $error contains
 	 *        an error message
 	 */
-	public function GBXChallengeInfo($filename) {
+	public function __construct($filename) {
 
 		$ip   = 'localhost';
 		$port = 5000;

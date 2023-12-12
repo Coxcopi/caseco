@@ -243,7 +243,7 @@ class TMXInfo {
 	 *        The TMX track string from TMXInfoSearcher
 	 * @return TMXInfo
 	 */
-	public function TMXInfo($section, $prefix, $track) {
+	public function __construct($section, $prefix, $track) {
 
 		$this->section  = $section;
 		$this->prefix   = $prefix;

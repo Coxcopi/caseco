@@ -177,7 +177,7 @@ class Aseco {
 	/**
 	 * Initializes the server.
 	 */
-	function Aseco($debug) {
+	function __construct($debug) {
 		global $maxrecs;  // from rasp.settings.php
 
 		echo '# initialize XASECO ###########################################################' . CRLF;

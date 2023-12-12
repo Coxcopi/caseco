@@ -53,7 +53,7 @@ class TMXInfoFetcher {
 	 * @return TMXInfoFetcher
 	 *        If $error is not an empty string, it's an error message
 	 */
-	public function TMXInfoFetcher($game, $id, $records) {
+	public function __construct($game, $id, $records) {
 
 		$this->section = $game;
 		switch ($game) {

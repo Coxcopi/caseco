@@ -74,7 +74,7 @@ class IXR_Value {
 	public $data;
 	public $type;
 
-	function IXR_Value ($data, $type = false) {
+	function __construct($data, $type = false) {
 		$this->data = $data;
 		if (!$type) {
 			$type = $this->calculateType();
@@ -191,7 +191,7 @@ class IXR_Message {
 	// The XML parser
 	protected $_parser;
 
-	function IXR_Message ($message) {
+	function __construct($message) {
 		$this->message = $message;
 	}
 
@@ -339,7 +339,7 @@ class IXR_Request {
 	public $args;
 	public $xml;
 
-	function IXR_Request($method, $args) {
+	function __construct($method, $args) {
 		$this->method = $method;
 		$this->args = $args;
 		$this->xml = '<?xml version="1.0" encoding="utf-8" ?><methodCall><methodName>' . $this->method . '</methodName><params>';
@@ -366,7 +366,7 @@ class IXR_Error {
 	public $code;
 	public $message;
 
-	function IXR_Error($code, $message) {
+	function __construct($code, $message) {
 		$this->code = $code;
 		$this->message = $message;
 	}
@@ -403,7 +403,7 @@ class IXR_Date {
 	public $minute;
 	public $second;
 
-	function IXR_Date($time) {
+	function __construct($time) {
 		// $time can be a PHP timestamp or an ISO one
 		if (is_numeric($time)) {
 			$this->parseTimestamp($time);
@@ -447,7 +447,7 @@ class IXR_Date {
 class IXR_Base64 {
 	public $data;
 
-	function IXR_Base64($data) {
+	function __construct($data) {
 		$this->data = $data;
 	}
 
@@ -481,7 +481,7 @@ class IXR_Client_Gbx {
 		return true;
 	}  // bigEndianTest
 
-	function IXR_Client_Gbx() {
+	function __construct() {
 		$this->socket = false;
 		$this->reqhandle = 0x80000000;
 	}

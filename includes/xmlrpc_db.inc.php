@@ -30,7 +30,7 @@ class XmlrpcDB {
 	// Methods
 	//-----------------------------
 
-	function XmlrpcDB($webaccess, $url, $game, $login, $password, $tool, $version, $nation, $packmask = '') {
+	function __construct($webaccess, $url, $game, $login, $password, $tool, $version, $nation, $packmask = '') {
 
 		$this->_debug = 0;  // max debug level = 3
 		$this->_webaccess = $webaccess;

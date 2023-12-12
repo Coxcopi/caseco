@@ -122,7 +122,7 @@ class Webaccess {
 
 	var $_WebaccessList;
 
-	function Webaccess() {
+	function __construct() {
 		$this->_WebaccessList = array();
 	}
 
@@ -359,7 +359,7 @@ class WebaccessUrl {
 	// Methods
 	//-----------------------------
 
-	function WebaccessUrl(&$wa, $host, $port, $keepalive = true, $keepalive_timeout = 600, $keepalive_max = 300, $agent = 'XMLaccess') {
+	function __construct(&$wa, $host, $port, $keepalive = true, $keepalive_timeout = 600, $keepalive_max = 300, $agent = 'XMLaccess') {
 		global $_web_access_compress_xmlrpc_request, $_web_access_retry_timeout;
 
 		$this->wa = &$wa;

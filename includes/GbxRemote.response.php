@@ -167,7 +167,7 @@ class IXR_RequestStd {
 	var $xml;
 
 	// see xmlrpc_request
-	function IXR_RequestStd($method, $params = null) {
+	function __construct($method, $params = null) {
 
 		$this->method = $method;
 		// in case the first level array was forgotten in a multicall then add it...
@@ -199,7 +199,7 @@ class IXR_ResponseStd {
 	var $xml;
 
 	// see xmlrpc_response
-	function IXR_ResponseStd($args) {
+	function __construct($args) {
 
 		$this->args = $args;
 		$this->xml = xmlrpc_response($this->args);

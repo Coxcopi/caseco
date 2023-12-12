@@ -25,7 +25,7 @@ class RecordList {
 	var $max;
 
 	// instantiates a record list with max $limit records
-	function RecordList($limit) {
+	function __construct($limit) {
 		$this->record_list = array();
 		$this->max = $limit;
 	}
@@ -152,7 +152,7 @@ class Player {
 	}
 
 	// instantiates the player with an RPC response
-	function Player($rpc_infos = null) {
+	function __construct($rpc_infos = null) {
 		$this->id = 0;
 		if ($rpc_infos) {
 			$this->pid = $rpc_infos['PlayerId'];
@@ -230,7 +230,7 @@ class PlayerList {
 	var $player_list;
 
 	// instantiates the empty player list
-	function PlayerList() {
+	function __construct() {
 		$this->player_list = array();
 	}
 
@@ -306,7 +306,7 @@ class Challenge {
 	var $tmx;
 
 	// instantiates the challenge with an RPC response
-	function Challenge($rpc_infos = null) {
+	function __construct($rpc_infos = null) {
 		$this->id = 0;
 		if ($rpc_infos) {
 			$this->name = stripNewlines($rpc_infos['Name']);
@@ -348,7 +348,7 @@ class RPCCall {
 	var $call;
 
 	// instantiates the RPC call with the parameters
-	function RPCCall($id, $index, $callback, $call) {
+	function __construct($id, $index, $callback, $call) {
 		$this->id = $id;
 		$this->index = $index;
 		$this->callback = $callback;
@@ -366,7 +366,7 @@ class ChatCommand {
 	var $isadmin;
 
 	// instantiates the chat command with the parameters
-	function ChatCommand($name, $help, $isadmin) {
+	function __construct($name, $help, $isadmin) {
 		$this->name = $name;
 		$this->help = $help;
 		$this->isadmin = $isadmin;
@@ -433,7 +433,7 @@ class Server {
 	}
 
 	// instantiates the server with default parameters
-	function Server($ip, $port, $login, $pass) {
+	function __construct($ip, $port, $login, $pass) {
 		$this->ip = $ip;
 		$this->port = $port;
 		$this->login = $login;
@@ -483,7 +483,7 @@ class Gameinfo {
 	}
 
 	// instantiates the game info with an RPC response
-	function Gameinfo($rpc_infos = null) {
+	function __construct($rpc_infos = null) {
 		if ($rpc_infos) {
 			$this->mode = $rpc_infos['GameMode'];
 			$this->numchall = $rpc_infos['NbChallenge'];

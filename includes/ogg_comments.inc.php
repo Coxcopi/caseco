@@ -29,7 +29,7 @@ class Ogg_Comments {
 	 * @return Ogg_Comments
 	 *        If $comments is empty, no .ogg file
 	 */
-	public function Ogg_Comments($path, $utf8 = false) {
+	public function __construct($path, $utf8 = false) {
 
 		// check for local file or URL
 		if (strpos($path, '://') === false) {
