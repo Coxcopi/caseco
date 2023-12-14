@@ -14,3 +14,4 @@ Countless issues and security concerns aswell as compatability problems with PHP
 - [X] Update constructor syntax
 - [X] Fix array string index access changes
 - [ ] Replace mysql_*() with PDOs
+- [ ] update uft8 encoding/decoding
