@@ -827,4 +827,11 @@ function bool2text($boolval) {
 	else
 		return 'False';
 }  // bool2text
+
+/**
+ * Converts a PDO query error to a text string
+ */
+function errInfo2text($pdo_err_info) {
+	return implode("; ", $pdo_err_info);
+}  // errInfo2text 
 ?>

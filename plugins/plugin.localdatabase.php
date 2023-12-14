@@ -269,8 +269,8 @@ function ldb_reconnect($aseco) {
 	if (empty($aseco->server->players->player_list)) {
 		if (!is_connection_alive($dbo)) {
 			$dbo = connect_to_db();
+			$aseco->console('[LocalDB] Reconnected to MySQL Server.');
 		}
-		$aseco->console('[LocalDB] Reconnected to MySQL Server.');
 	}
 }  // ldb_reconnect
 
@@ -308,10 +308,10 @@ function ldb_playerConnect($aseco, $player) {
 	          // ' AND Game=' . quotedString($aseco->server->getGame());
 	$result = $dbo->query($query);
 
-	if ($result === false || $result->rowCount() == 0) {
+	if ($result === false) {
 		if ($result !== false)
 			$result = null;
-		trigger_error('Could not get stats of connecting player! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+		trigger_error('Could not get stats of connecting player! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		return;
 	}
 
@@ -343,7 +343,7 @@ function ldb_playerConnect($aseco, $player) {
 		$result = $dbo->query($query);
 
 		if ($result === false || $result->rowCount() == -1) {
-			trigger_error('Could not update connecting player! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+			trigger_error('Could not update connecting player! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 			return;
 		}
 
@@ -364,15 +364,15 @@ function ldb_playerConnect($aseco, $player) {
 		$result = $dbo->query($query);
 
 		if ($result === false || $result->rowCount() != 1) {
-			trigger_error('Could not insert connecting player! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+			trigger_error('Could not insert connecting player! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 			return;
 		} else {
 			$query = 'SELECT LAST_INSERT_ID() FROM players';
 			$result = $dbo->query($query);
-			if ($result === false || $result->rowCount() == 0) {
+			if ($result === false) {
 				if ($result !== false)
 					$result = null;
-				trigger_error('Could not get inserted player\'s id! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+				trigger_error('Could not get inserted player\'s id! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 				return;
 			} else {
 				$dbplayer = $result->fetch(PDO::FETCH_NUM);
@@ -387,10 +387,10 @@ function ldb_playerConnect($aseco, $player) {
 	          WHERE playerID=' . $player->id;
 	$result = $dbo->query($query);
 
-	if ($result === false || $result->rowCount() == 0) {
+	if ($result === false) {
 		if ($result !== false)
 			$result = null;
-		trigger_error('Could not get player\'s extra data! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+		trigger_error('Could not get player\'s extra data! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		return;
 	}
 
@@ -417,7 +417,7 @@ function ldb_playerConnect($aseco, $player) {
 		$result = $dbo->query($query);
 
 		if ($result === false || $result->rowCount() != 1) {
-			trigger_error('Could not insert player\'s extra data! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+			trigger_error('Could not insert player\'s extra data! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		}
 	}
 }  // ldb_playerConnect
@@ -437,7 +437,7 @@ function ldb_playerDisconnect($aseco, $player) {
 	$result = $dbo->query($query);
 
 	if ($result === false || $result->rowCount() == -1) {
-		trigger_error('Could not update disconnecting player! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+		trigger_error('Could not update disconnecting player! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 	}
 }  // ldb_playerDisconnect
 
@@ -448,10 +448,10 @@ function ldb_getDonations($aseco, $login) {
 	          WHERE playerID=' . $aseco->getPlayerId($login);
 	$result = $dbo->query($query);
 
-	if ($result === false || $result->rowCount() == 0 || $result->rowCount() == 0) {
+	if ($result === false) {
 		if ($result !== false)
 			$result = null;
-		trigger_error('Could not get player\'s donations! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+		trigger_error('Could not get player\'s donations! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		return false;
 	} else {
 		$dbextra = $result->fetch(PDO::FETCH_OBJ);
@@ -470,7 +470,7 @@ function ldb_updateDonations($aseco, $login, $donation) {
 	$result = $dbo->query($query);
 
 	if ($result === false || $result->rowCount() != 1) {
-		trigger_error('Could not update player\'s donations! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+		trigger_error('Could not update player\'s donations! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 	}
 }  // ldb_updateDonations
 
@@ -481,10 +481,10 @@ function ldb_getCPs($aseco, $login) {
 	          WHERE playerID=' . $aseco->getPlayerId($login);
 	$result = $dbo->query($query);
 
-	if ($result === false || $result->rowCount() == 0 || $result->rowCount() == 0) {
+	if ($result === false) {
 		if ($result !== false)
 			$result = null;
-		trigger_error('Could not get player\'s CPs! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+		trigger_error('Could not get player\'s CPs! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		return false;
 	} else {
 		$dbextra = $result->fetch(PDO::FETCH_OBJ);
@@ -502,7 +502,7 @@ function ldb_setCPs($aseco, $login, $cps, $dedicps) {
 	$result = $dbo->query($query);
 
 	if ($result === false || $result->rowCount() == -1) {
-		trigger_error('Could not update player\'s CPs! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+		trigger_error('Could not update player\'s CPs! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 	}
 }  // ldb_setCPs
 
@@ -513,10 +513,10 @@ function ldb_getStyle($aseco, $login) {
 	          WHERE playerID=' . $aseco->getPlayerId($login);
 	$result = $dbo->query($query);
 
-	if ($result === false || $result->rowCount() == 0 || $result->rowCount() == 0) {
+	if ($result === false) {
 		if ($result !== false)
 			$result = null;
-		trigger_error('Could not get player\'s style! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+		trigger_error('Could not get player\'s style! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		return false;
 	} else {
 		$dbextra = $result->fetch(PDO::FETCH_OBJ);
@@ -534,7 +534,7 @@ function ldb_setStyle($aseco, $login, $style) {
 	$result = $dbo->query($query);
 
 	if ($result === false || $result->rowCount() == -1) {
-		trigger_error('Could not update player\'s style! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+		trigger_error('Could not update player\'s style! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 	}
 }  // ldb_setStyle
 
@@ -545,10 +545,10 @@ function ldb_getPanels($aseco, $login) {
 	          WHERE playerID=' . $aseco->getPlayerId($login);
 	$result = $dbo->query($query);
 
-	if ($result === false || $result->rowCount() == 0 || $result->rowCount() == 0) {
+	if ($result === false) {
 		if ($result !== false)
 			$result = null;
-		trigger_error('Could not get player\'s panels! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+		trigger_error('Could not get player\'s panels! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		return false;
 	} else {
 		$dbextra = $result->fetch(PDO::FETCH_OBJ);
@@ -576,7 +576,7 @@ function ldb_setPanel($aseco, $login, $type, $panel) {
 	$result = $dbo->query($query);
 
 	if ($result === false || $result->rowCount() == -1) {
-		trigger_error('Could not update player\'s panels! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+		trigger_error('Could not update player\'s panels! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 	}
 }  // ldb_setPanel
 
@@ -801,7 +801,7 @@ function ldb_insert_record($record) {
 	$result = $dbo->query($query);
 
 	if ($result === false || $result->rowCount() <= 0) {
-		trigger_error('Could not insert/update record! (' . $result->errorCode() . ': ' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+		trigger_error('Could not insert/update record! (' . $result->errorCode() . ': ' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 	}
 }  // ldb_insert_record
 
@@ -812,7 +812,7 @@ function ldb_removeRecord($aseco, $cid, $pid, $recno) {
 	$query = 'DELETE FROM records WHERE ChallengeId=' . $cid . ' AND PlayerId=' . $pid;
 	$result = $dbo->query($query);
 	if ($result === false || $result->rowCount() != 1) {
-		trigger_error('Could not remove record! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+		trigger_error('Could not remove record! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 	}
 
 	// remove record from specified position
@@ -889,6 +889,7 @@ function ldb_removeRecord($aseco, $cid, $pid, $recno) {
 // called @ onNewChallenge
 function ldb_newChallenge($aseco, $challenge) {
 	global $ldb_challenge, $ldb_records, $ldb_settings;
+	global $dbo;
 
 	$ldb_records->clear();
 	$aseco->server->records->clear();
@@ -908,12 +909,12 @@ function ldb_newChallenge($aseco, $challenge) {
 	          GROUP BY r.Id
 	          ORDER BY r.Score ' . $order . ',r.Date ASC
 	          LIMIT ' . $ldb_records->max;
+
 	$result = $dbo->query($query);
 
-	if ($result === false || $result->rowCount() == 0) {
-		if ($result !== false)
-			$result = null;
-		trigger_error('Could not get challenge info! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+	if ($result === false) {
+		$a = errInfo2text($result->errorInfo());
+		trigger_error('Could not get challenge info! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		return;
 	}
 
@@ -983,12 +984,12 @@ function ldb_newChallenge($aseco, $challenge) {
 				$challenge->id = $row[0];
 			} else {
 				// challenge Id could not be found
-				trigger_error('Could not get new challenge id! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+				trigger_error('Could not get new challenge id! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 			}
 			if ($result !== false)
 				$result = null;
 		} else {
-			trigger_error('Could not insert new challenge! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+			trigger_error('Could not insert new challenge! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		}
 	}
 }  // ldb_newChallenge
@@ -1003,7 +1004,7 @@ function ldb_playerWins($aseco, $player) {
 	$result = $dbo->query($query);
 
 	if ($result === false || $result->rowCount() != 1) {
-		trigger_error('Could not update winning player! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+		trigger_error('Could not update winning player! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 	}
 }  // ldb_playerWins
 
@@ -1027,9 +1028,9 @@ function is_connection_alive(PDO $dbo) {
 	if ($dbo === null) {
 		return false;
 	}
-	print($dbo->getAttribute(PDO::ATTR_CONNECTION_STATUS));
 	try {
 		$dbo->query("DO 1;");
+		return true;
 	} catch (PDOException $ex) {
 		return false;
 	}

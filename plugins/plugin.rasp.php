@@ -249,7 +249,7 @@ class Rasp {
 				                    . quotedString($row['Author']) . ', ' . quotedString($row['Environnement']) . ')';
 				$result = $dbo->query($query);
 				if ($result->rownCount() != 1) {
-					trigger_error('{RASP_ERROR} Could not insert challenge! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+					trigger_error('{RASP_ERROR} Could not insert challenge! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 				} else {
 					$tid = $dbo->lastInsertId();
 				}
@@ -358,9 +358,9 @@ class Rasp {
 			$query = substr($query, 0, strlen($query)-1);  // strip trailing ','
 			$result = $dbo->query($query);
 			if ($result->rowCount() < 1) {
-				trigger_error('{RASP_ERROR} Could not insert any player averages! (' . $result->errorInfo() . ')', E_USER_WARNING);
+				trigger_error('{RASP_ERROR} Could not insert any player averages! (' . errInfo2text($result->errorInfo()) . ')', E_USER_WARNING);
 			} elseif ($result->rowCount() != count($players)) {
-				trigger_error('{RASP_ERROR} Could not insert all ' . count($players) . ' player averages! (' . $result->errorInfo() . ')', E_USER_WARNING);
+				trigger_error('{RASP_ERROR} Could not insert all ' . count($players) . ' player averages! (' . errInfo2text($result->errorInfo()) . ')', E_USER_WARNING);
 				// increase MySQL's max_allowed_packet setting
 			}
 		}
@@ -594,7 +594,7 @@ class Rasp {
 			                    . quotedString(time()) . ', ' . quotedString($cps) . ')';
 			$result = $dbo->query($query);
 			if ($result->rownCount() != 1) {
-				trigger_error('{RASP_ERROR} Could not insert time! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+				trigger_error('{RASP_ERROR} Could not insert time! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 			}
 		} else {
 			trigger_error('{RASP_ERROR} Could not get Player ID for ' . $time->player->login . ' !', E_USER_WARNING);
@@ -606,7 +606,7 @@ class Rasp {
 		$query = 'DELETE FROM rs_times WHERE challengeID=' . $cid . ' AND playerID=' . $pid;
 		$result = $dbo->query($query);
 		if ($result->rownCount() <= 0) {
-			trigger_error('{RASP_ERROR} Could not remove time(s)! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+			trigger_error('{RASP_ERROR} Could not remove time(s)! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		}
 	}  // deleteTime
 
