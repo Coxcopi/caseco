@@ -90,7 +90,9 @@ function displayError($errno, $errstr, $errfile, $errline) {
 	global $aseco;
 
 	// check for error suppression
-	if (error_reporting() == 0) return;
+	if(error_reporting() === (E_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_USER_ERROR | E_RECOVERABLE_ERROR | E_PARSE)) {
+		return;
+	}
 
 	switch ($errno) {
 	case E_USER_ERROR:
