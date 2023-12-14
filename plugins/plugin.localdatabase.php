@@ -64,22 +64,17 @@ function ldb_connect($aseco) {
 	global $ldb_challenge;
 	$ldb_challenge = new Challenge();
 
+	// database object
+	global $dbo;
+
 	// log status message
 	$aseco->console("[LocalDB] Try to connect to MySQL server on '{1}' with database '{2}'",
 	                $ldb_settings['mysql']['host'], $ldb_settings['mysql']['database']);
 
-	if (!$ldb_settings['mysql']['connection'] = mysql_connect($ldb_settings['mysql']['host'],
-	                                                          $ldb_settings['mysql']['login'],
-	                                                          $ldb_settings['mysql']['password'])) {
-		trigger_error('[LocalDB] Could not authenticate at MySQL server!', E_USER_ERROR);
-	}
-
-	if (!mysql_select_db($ldb_settings['mysql']['database'])) {
-		trigger_error('[LocalDB] Could not find MySQL database!', E_USER_ERROR);
-	}
+	$dbo = connect_to_db();
 
 	// log status message
-	$aseco->console('[LocalDB] MySQL Server Version is ' . mysql_get_server_info());
+	$aseco->console('[LocalDB] MySQL Server Version is ' . $dbo->getAttribute(PDO::ATTR_SERVER_VERSION));
 	// optional UTF-8 handling fix
 	//mysql_query('SET NAMES utf8');
 	$aseco->console('[LocalDB] Checking database structure...');
@@ -94,7 +89,7 @@ function ldb_connect($aseco) {
 	            PRIMARY KEY (`Id`),
 	            UNIQUE KEY `Uid` (`Uid`)
 	          ) ENGINE=MyISAM";
-	mysql_query($query);
+	$dbo->query($query);
 
 	$query = "CREATE TABLE IF NOT EXISTS `players` (
 	            `Id` mediumint(9) NOT NULL auto_increment,
@@ -110,7 +105,7 @@ function ldb_connect($aseco) {
 	            UNIQUE KEY `Login` (`Login`),
 	            KEY `Game` (`Game`)
 	          ) ENGINE=MyISAM";
-	mysql_query($query);
+	$dbo->query($query);
 
 	$query = "CREATE TABLE IF NOT EXISTS `records` (
 	            `Id` int(11) NOT NULL auto_increment,
@@ -123,7 +118,7 @@ function ldb_connect($aseco) {
 	            UNIQUE KEY `PlayerId` (`PlayerId`,`ChallengeId`),
 	            KEY `ChallengeId` (`ChallengeId`)
 	          ) ENGINE=MyISAM";
-	mysql_query($query);
+	$dbo->query($query);
 
 	$query = "CREATE TABLE IF NOT EXISTS `players_extra` (
 	            `playerID` mediumint(9) NOT NULL default 0,
@@ -135,14 +130,14 @@ function ldb_connect($aseco) {
 	            PRIMARY KEY (`playerID`),
 	            KEY `donations` (`donations`)
 	          ) ENGINE=MyISAM";
-	mysql_query($query);
+	$dbo->query($query);
 
 	// check for main tables
 	$tables = array();
-	$res = mysql_query('SHOW TABLES');
-	while ($row = mysql_fetch_row($res))
+	$res = $dbo->query('SHOW TABLES');
+	while ($row = $res->fetch(PDO::FETCH_NUM))
 		$tables[] = $row[0];
-	mysql_free_result($res);
+	$res = null;
 	$check = array();
 	$check[1] = in_array('challenges', $tables);
 	$check[2] = in_array('players', $tables);
@@ -153,113 +148,113 @@ function ldb_connect($aseco) {
 	}
 
 	// enlarge challenges 'Name' colum
-	$result = mysql_query('DESC challenges Name');
-	$row = mysql_fetch_row($result);
-	mysql_free_result($result);
+	$result = $dbo->query('DESC challenges Name');
+	$row = $result->fetch(PDO::FETCH_NUM);
+	$result = null;
 	if ($row[1] != 'varchar(100)') {
 		$aseco->console("[LocalDB] Alter 'challenges' column 'Name'...");
-		mysql_query("ALTER TABLE challenges MODIFY Name varchar(100) NOT NULL default ''");
+		$dbo->query("ALTER TABLE challenges MODIFY Name varchar(100) NOT NULL default ''");
 	}
 
 	// reduce challenges 'Environment' colum
-	$result = mysql_query('DESC challenges Environment');
-	$row = mysql_fetch_row($result);
-	mysql_free_result($result);
+	$result = $dbo->query('DESC challenges Environment');
+	$row = $result->fetch(PDO::FETCH_NUM);
+	$result = null;
 	if ($row[1] != 'varchar(10)') {
 		$aseco->console("[LocalDB] Alter 'challenges' column 'Environment'...");
-		mysql_query("ALTER TABLE challenges MODIFY Environment varchar(10) NOT NULL default ''");
+		$dbo->query("ALTER TABLE challenges MODIFY Environment varchar(10) NOT NULL default ''");
 	}
 
 	// add players 'TeamName' column
 	$fields = array();
-	$result = mysql_query('SHOW COLUMNS FROM players');
-	while ($row = mysql_fetch_row($result))
+	$result = $dbo->query('SHOW COLUMNS FROM players');
+	while ($row = $result->fetch(PDO::FETCH_NUM))
 		$fields[] = $row[0];
-	mysql_free_result($result);
+	$result = null;
 	if (!in_array('TeamName', $fields)) {
 		$aseco->console("[LocalDB] Add 'players' column 'TeamName'...");
-		mysql_query("ALTER TABLE players ADD TeamName char(60) NOT NULL default ''");
+		$dbo->query("ALTER TABLE players ADD TeamName char(60) NOT NULL default ''");
 	}
 
 	// enlarge players 'NickName' & 'TimePlayed' columns
-	$result = mysql_query('DESC players NickName');
-	$row = mysql_fetch_row($result);
-	mysql_free_result($result);
+	$result = $dbo->query('DESC players NickName');
+	$row = $result->fetch(PDO::FETCH_NUM);
+	$result = null;
 	if ($row[1] != 'varchar(100)') {
 		$aseco->console("[LocalDB] Alter 'players' column 'NickName'...");
-		mysql_query("ALTER TABLE players MODIFY NickName varchar(100) NOT NULL default ''");
+		$dbo->query("ALTER TABLE players MODIFY NickName varchar(100) NOT NULL default ''");
 	}
-	$result = mysql_query('DESC players TimePlayed');
-	$row = mysql_fetch_row($result);
-	mysql_free_result($result);
+	$result = $dbo->query('DESC players TimePlayed');
+	$row = $result->fetch(PDO::FETCH_NUM);
+	$result = null;
 	if ($row[1] != 'int(10) unsigned') {
 		$aseco->console("[LocalDB] Alter 'players' column 'TimePlayed'...");
-		mysql_query("ALTER TABLE players MODIFY TimePlayed int(10) unsigned NOT NULL default 0");
+		$dbo->query("ALTER TABLE players MODIFY TimePlayed int(10) unsigned NOT NULL default 0");
 	}
 
 	// enlarge records 'Id' & 'Score' columns
-	$result = mysql_query('DESC records Id');
-	$row = mysql_fetch_row($result);
-	mysql_free_result($result);
+	$result = $dbo->query('DESC records Id');
+	$row = $result->fetch(PDO::FETCH_NUM);
+	$result = null;
 	if ($row[1] != 'int(11)') {
 		$aseco->console("[LocalDB] Alter 'records' column 'Id'...");
-		mysql_query('ALTER TABLE records MODIFY Id int(11) auto_increment');
+		$dbo->query('ALTER TABLE records MODIFY Id int(11) auto_increment');
 	}
-	$result = mysql_query('DESC records Score');
-	$row = mysql_fetch_row($result);
-	mysql_free_result($result);
+	$result = $dbo->query('DESC records Score');
+	$row = $result->fetch(PDO::FETCH_NUM);
+	$result = null;
 	if ($row[1] != 'int(11)') {
 		$aseco->console("[LocalDB] Alter 'records' column 'Score'...");
-		mysql_query("ALTER TABLE records MODIFY Score int(11) NOT NULL default 0");
+		$dbo->query("ALTER TABLE records MODIFY Score int(11) NOT NULL default 0");
 	}
 
 	// add records 'Checkpoints' column
 	$fields = array();
-	$result = mysql_query('SHOW COLUMNS FROM records');
-	while ($row = mysql_fetch_row($result))
+	$result = $dbo->query('SHOW COLUMNS FROM records');
+	while ($row = $result->fetch(PDO::FETCH_NUM))
 		$fields[] = $row[0];
-	mysql_free_result($result);
+	$result = null;
 	if (!in_array('Checkpoints', $fields)) {
 		$aseco->console("[LocalDB] Add 'records' column 'Checkpoints'...");
-		mysql_query("ALTER TABLE records ADD Checkpoints text NOT NULL");
+		$dbo->query("ALTER TABLE records ADD Checkpoints text NOT NULL");
 	}
 
 	// change records old 'ChallengeId' key into new 'PlayerId' key and
 	//  add records new 'ChallengeId' key
 	$fields = array('PlayerId' => 0, 'ChallengeId' => 0);
-	$result = mysql_query('SHOW INDEX FROM records');
-	while ($row = mysql_fetch_row($result)) {
+	$result = $dbo->query('SHOW INDEX FROM records');
+	while ($row = $result->fetch(PDO::FETCH_NUM)) {
 		if (isset($fields[$row[2]]))
 			$fields[$row[2]]++;
 	}
-	mysql_free_result($result);
+	$result = null;
 	if ($fields['ChallengeId'] == 2 && $fields['PlayerId'] == 0) {
 		$aseco->console("[LocalDB] Drop 'records' key 'ChallengeId'...");
-		mysql_query("ALTER TABLE records DROP KEY ChallengeId");
+		$dbo->query("ALTER TABLE records DROP KEY ChallengeId");
 		$aseco->console("[LocalDB] Add 'records' key 'PlayerId'...");
-		mysql_query("ALTER TABLE records ADD UNIQUE KEY PlayerId (PlayerId, ChallengeId)");
+		$dbo->query("ALTER TABLE records ADD UNIQUE KEY PlayerId (PlayerId, ChallengeId)");
 		$aseco->console("[LocalDB] Add 'records' key 'ChallengeId'...");
-		mysql_query("ALTER TABLE records ADD KEY ChallengeId (ChallengeId)");
+		$dbo->query("ALTER TABLE records ADD KEY ChallengeId (ChallengeId)");
 	}
 
 	// change players_extra 'playerID' key into primary key and
 	//  add players_extra 'donations' key
 	$fields = array();
-	$result = mysql_query('SHOW INDEX FROM players_extra');
-	while ($row = mysql_fetch_row($result))
+	$result = $dbo->query('SHOW INDEX FROM players_extra');
+	while ($row = $result->fetch(PDO::FETCH_NUM))
 		$fields[] = $row[2];
-	mysql_free_result($result);
+	$result = null;
 	if (in_array('playerID', $fields)) {
 		$aseco->console("[LocalDB] Drop 'players_extra' key 'playerID'...");
-		mysql_query("ALTER TABLE players_extra DROP KEY playerID");
+		$dbo->query("ALTER TABLE players_extra DROP KEY playerID");
 	}
 	if (!in_array('PRIMARY', $fields)) {
 		$aseco->console("[LocalDB] Add 'players_extra' primary key 'playerID'...");
-		mysql_query("ALTER TABLE players_extra ADD PRIMARY KEY (playerID)");
+		$dbo->query("ALTER TABLE players_extra ADD PRIMARY KEY (playerID)");
 	}
 	if (!in_array('donations', $fields)) {
 		$aseco->console("[LocalDB] Add 'players_extra' key 'donations'...");
-		mysql_query("ALTER TABLE players_extra ADD KEY donations (donations)");
+		$dbo->query("ALTER TABLE players_extra ADD KEY donations (donations)");
 	}
 
 	$aseco->console('[LocalDB] ...Structure OK!');
@@ -267,24 +262,15 @@ function ldb_connect($aseco) {
 
 // called @ onEverySecond
 function ldb_reconnect($aseco) {
-	global $ldb_settings;
+	global $dlb_settings;
+	global $dbo;
 
-	// check if any players online
+	// check for online players
 	if (empty($aseco->server->players->player_list)) {
-		// check if MySQL connection still alive
-		if (!mysql_ping($ldb_settings['mysql']['connection'])) {
-			// connection timed out so reconnect
-			mysql_close($ldb_settings['mysql']['connection']);
-			if (!$ldb_settings['mysql']['connection'] = mysql_connect($ldb_settings['mysql']['host'],
-			                                                          $ldb_settings['mysql']['login'],
-			                                                          $ldb_settings['mysql']['password'])) {
-				trigger_error('[LocalDB] Could not authenticate at MySQL server!', E_USER_ERROR);
-			}
-			if (!mysql_select_db($ldb_settings['mysql']['database'])) {
-				trigger_error('[LocalDB] Could not find MySQL database!', E_USER_ERROR);
-			}
-			$aseco->console('[LocalDB] Reconnected to MySQL Server');
+		if (!is_connection_alive($dbo)) {
+			$dbo = connect_to_db();
 		}
+		$aseco->console('[LocalDB] Reconnected to MySQL Server.');
 	}
 }  // ldb_reconnect
 
@@ -320,19 +306,19 @@ function ldb_playerConnect($aseco, $player) {
 	$query = 'SELECT Id, Wins, TimePlayed, TeamName FROM players
 	          WHERE Login=' . quotedString($player->login); // .
 	          // ' AND Game=' . quotedString($aseco->server->getGame());
-	$result = mysql_query($query);
+	$result = $dbo->query($query);
 
-	if ($result === false || mysql_num_rows($result) === false) {
+	if ($result === false || $result->rowCount() == 0) {
 		if ($result !== false)
-			mysql_free_result($result);
-		trigger_error('Could not get stats of connecting player! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+			$result = null;
+		trigger_error('Could not get stats of connecting player! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		return;
 	}
 
 	// was retrieved
-	if (mysql_num_rows($result) > 0) {
-		$dbplayer = mysql_fetch_object($result);
-		mysql_free_result($result);
+	if ($result->rowCount() > 0) {
+		$dbplayer = $result->fetch(PDO::FETCH_OBJ);
+		$result = null;
 
 		// update player stats
 		$player->id = $dbplayer->Id;
@@ -354,16 +340,16 @@ function ldb_playerConnect($aseco, $player) {
 		              UpdatedAt=NOW()
 		          WHERE Login=' . quotedString($player->login); // .
 		          // ' AND Game=' . quotedString($aseco->server->getGame());
-		$result = mysql_query($query);
+		$result = $dbo->query($query);
 
-		if ($result === false || mysql_affected_rows() == -1) {
-			trigger_error('Could not update connecting player! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+		if ($result === false || $result->rowCount() == -1) {
+			trigger_error('Could not update connecting player! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 			return;
 		}
 
 	// could not be retrieved
 	} else {  // mysql_num_rows() == 0
-		mysql_free_result($result);
+		$result = null;
 		$player->id = 0;
 
 		// insert player
@@ -375,23 +361,23 @@ function ldb_playerConnect($aseco, $player) {
 		           quotedString($player->nickname) . ', ' .
 		           quotedString($nation) . ', ' .
 		           quotedString($player->teamname) . ', NOW())';
-		$result = mysql_query($query);
+		$result = $dbo->query($query);
 
-		if ($result === false || mysql_affected_rows() != 1) {
-			trigger_error('Could not insert connecting player! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+		if ($result === false || $result->rowCount() != 1) {
+			trigger_error('Could not insert connecting player! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 			return;
 		} else {
 			$query = 'SELECT LAST_INSERT_ID() FROM players';
-			$result = mysql_query($query);
-			if ($result === false || mysql_num_rows($result) === false) {
+			$result = $dbo->query($query);
+			if ($result === false || $result->rowCount() == 0) {
 				if ($result !== false)
-					mysql_free_result($result);
-				trigger_error('Could not get inserted player\'s id! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+					$result = null;
+				trigger_error('Could not get inserted player\'s id! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 				return;
 			} else {
-				$dbplayer = mysql_fetch_row($result);
+				$dbplayer = $result->fetch(PDO::FETCH_NUM);
 				$player->id = $dbplayer[0];
-				mysql_free_result($result);
+				$result = null;
 			}
 		}
 	}
@@ -399,22 +385,22 @@ function ldb_playerConnect($aseco, $player) {
 	// check for player's extra data
 	$query = 'SELECT playerID FROM players_extra
 	          WHERE playerID=' . $player->id;
-	$result = mysql_query($query);
+	$result = $dbo->query($query);
 
-	if ($result === false || mysql_num_rows($result) === false) {
+	if ($result === false || $result->rowCount() == 0) {
 		if ($result !== false)
-			mysql_free_result($result);
-		trigger_error('Could not get player\'s extra data! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+			$result = null;
+		trigger_error('Could not get player\'s extra data! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		return;
 	}
 
 	// was retrieved
-	if (mysql_num_rows($result) > 0) {
-		mysql_free_result($result);
+	if ($result->rowCount() > 0) {
+		$result = null;
 
 	// could not be retrieved
 	} else {  // mysql_num_rows() == 0
-		mysql_free_result($result);
+		$result = null;
 
 		// insert player's default extra data
 		$query = 'INSERT INTO players_extra
@@ -428,10 +414,10 @@ function ldb_playerConnect($aseco, $player) {
 		                        $aseco->settings['donate_panel'] . '/' .
 		                        $aseco->settings['records_panel'] . '/' .
 		                        $aseco->settings['vote_panel']) . ')';
-		$result = mysql_query($query);
+		$result = $dbo->query($query);
 
-		if ($result === false || mysql_affected_rows() != 1) {
-			trigger_error('Could not insert player\'s extra data! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+		if ($result === false || $result->rowCount() != 1) {
+			trigger_error('Could not insert player\'s extra data! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		}
 	}
 }  // ldb_playerConnect
@@ -448,10 +434,10 @@ function ldb_playerDisconnect($aseco, $player) {
 	              TimePlayed=TimePlayed+' . $player->getTimeOnline() . '
 	          WHERE Login=' . quotedString($player->login); // .
 	          // ' AND Game=' . quotedString($aseco->server->getGame());
-	$result = mysql_query($query);
+	$result = $dbo->query($query);
 
-	if ($result === false || mysql_affected_rows() == -1) {
-		trigger_error('Could not update disconnecting player! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+	if ($result === false || $result->rowCount() == -1) {
+		trigger_error('Could not update disconnecting player! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 	}
 }  // ldb_playerDisconnect
 
@@ -460,16 +446,16 @@ function ldb_getDonations($aseco, $login) {
 	// get player's donations
 	$query = 'SELECT donations FROM players_extra
 	          WHERE playerID=' . $aseco->getPlayerId($login);
-	$result = mysql_query($query);
+	$result = $dbo->query($query);
 
-	if ($result === false || mysql_num_rows($result) === false || mysql_num_rows($result) == 0) {
+	if ($result === false || $result->rowCount() == 0 || $result->rowCount() == 0) {
 		if ($result !== false)
-			mysql_free_result($result);
-		trigger_error('Could not get player\'s donations! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+			$result = null;
+		trigger_error('Could not get player\'s donations! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		return false;
 	} else {
-		$dbextra = mysql_fetch_object($result);
-		mysql_free_result($result);
+		$dbextra = $result->fetch(PDO::FETCH_OBJ);
+		$result = null;
 
 		return $dbextra->donations;
 	}
@@ -481,10 +467,10 @@ function ldb_updateDonations($aseco, $login, $donation) {
 	$query = 'UPDATE players_extra
 	          SET donations=donations+' . $donation . '
 	          WHERE playerID=' . $aseco->getPlayerId($login);
-	$result = mysql_query($query);
+	$result = $dbo->query($query);
 
-	if ($result === false || mysql_affected_rows() != 1) {
-		trigger_error('Could not update player\'s donations! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+	if ($result === false || $result->rowCount() != 1) {
+		trigger_error('Could not update player\'s donations! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 	}
 }  // ldb_updateDonations
 
@@ -493,16 +479,16 @@ function ldb_getCPs($aseco, $login) {
 	// get player's CPs settings
 	$query = 'SELECT cps, dedicps FROM players_extra
 	          WHERE playerID=' . $aseco->getPlayerId($login);
-	$result = mysql_query($query);
+	$result = $dbo->query($query);
 
-	if ($result === false || mysql_num_rows($result) === false || mysql_num_rows($result) == 0) {
+	if ($result === false || $result->rowCount() == 0 || $result->rowCount() == 0) {
 		if ($result !== false)
-			mysql_free_result($result);
-		trigger_error('Could not get player\'s CPs! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+			$result = null;
+		trigger_error('Could not get player\'s CPs! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		return false;
 	} else {
-		$dbextra = mysql_fetch_object($result);
-		mysql_free_result($result);
+		$dbextra = $result->fetch(PDO::FETCH_OBJ);
+		$result = null;
 
 		return array('cps' => $dbextra->cps, 'dedicps' => $dbextra->dedicps);
 	}
@@ -513,10 +499,10 @@ function ldb_setCPs($aseco, $login, $cps, $dedicps) {
 	$query = 'UPDATE players_extra
 	          SET cps=' . $cps . ', dedicps=' . $dedicps . '
 	          WHERE playerID=' . $aseco->getPlayerId($login);
-	$result = mysql_query($query);
+	$result = $dbo->query($query);
 
-	if ($result === false || mysql_affected_rows() == -1) {
-		trigger_error('Could not update player\'s CPs! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+	if ($result === false || $result->rowCount() == -1) {
+		trigger_error('Could not update player\'s CPs! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 	}
 }  // ldb_setCPs
 
@@ -525,16 +511,16 @@ function ldb_getStyle($aseco, $login) {
 	// get player's style
 	$query = 'SELECT style FROM players_extra
 	          WHERE playerID=' . $aseco->getPlayerId($login);
-	$result = mysql_query($query);
+	$result = $dbo->query($query);
 
-	if ($result === false || mysql_num_rows($result) === false || mysql_num_rows($result) == 0) {
+	if ($result === false || $result->rowCount() == 0 || $result->rowCount() == 0) {
 		if ($result !== false)
-			mysql_free_result($result);
-		trigger_error('Could not get player\'s style! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+			$result = null;
+		trigger_error('Could not get player\'s style! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		return false;
 	} else {
-		$dbextra = mysql_fetch_object($result);
-		mysql_free_result($result);
+		$dbextra = $result->fetch(PDO::FETCH_OBJ);
+		$result = null;
 
 		return $dbextra->style;
 	}
@@ -545,10 +531,10 @@ function ldb_setStyle($aseco, $login, $style) {
 	$query = 'UPDATE players_extra
 	          SET style=' . quotedString($style) . '
 	          WHERE playerID=' . $aseco->getPlayerId($login);
-	$result = mysql_query($query);
+	$result = $dbo->query($query);
 
-	if ($result === false || mysql_affected_rows() == -1) {
-		trigger_error('Could not update player\'s style! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+	if ($result === false || $result->rowCount() == -1) {
+		trigger_error('Could not update player\'s style! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 	}
 }  // ldb_setStyle
 
@@ -557,16 +543,16 @@ function ldb_getPanels($aseco, $login) {
 	// get player's panels
 	$query = 'SELECT panels FROM players_extra
 	          WHERE playerID=' . $aseco->getPlayerId($login);
-	$result = mysql_query($query);
+	$result = $dbo->query($query);
 
-	if ($result === false || mysql_num_rows($result) === false || mysql_num_rows($result) == 0) {
+	if ($result === false || $result->rowCount() == 0 || $result->rowCount() == 0) {
 		if ($result !== false)
-			mysql_free_result($result);
-		trigger_error('Could not get player\'s panels! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+			$result = null;
+		trigger_error('Could not get player\'s panels! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		return false;
 	} else {
-		$dbextra = mysql_fetch_object($result);
-		mysql_free_result($result);
+		$dbextra = $result->fetch(PDO::FETCH_OBJ);
+		$result = null;
 
 		$panel = explode('/', $dbextra->panels);
 		$panels = array();
@@ -587,10 +573,10 @@ function ldb_setPanel($aseco, $login, $type, $panel) {
 	          SET panels=' . quotedString($panels['admin'] . '/' . $panels['donate'] . '/' .
 	                                      $panels['records'] . '/' . $panels['vote']) . '
 	          WHERE playerID=' . $aseco->getPlayerId($login);
-	$result = mysql_query($query);
+	$result = $dbo->query($query);
 
-	if ($result === false || mysql_affected_rows() == -1) {
-		trigger_error('Could not update player\'s panels! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+	if ($result === false || $result->rowCount() == -1) {
+		trigger_error('Could not update player\'s panels! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 	}
 }  // ldb_setPanel
 
@@ -812,10 +798,10 @@ function ldb_insert_record($record) {
 	           $record->score . ', NOW(), ' . quotedString($cps) . ') ' .
 	         'ON DUPLICATE KEY UPDATE ' .
 	          'Score=VALUES(Score), Date=VALUES(Date), Checkpoints=VALUES(Checkpoints)';
-	$result = mysql_query($query);
+	$result = $dbo->query($query);
 
-	if ($result === false || mysql_affected_rows() <= 0) {
-		trigger_error('Could not insert/update record! (' . mysql_errno() . ': ' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+	if ($result === false || $result->rowCount() <= 0) {
+		trigger_error('Could not insert/update record! (' . $result->errorCode() . ': ' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 	}
 }  // ldb_insert_record
 
@@ -824,9 +810,9 @@ function ldb_removeRecord($aseco, $cid, $pid, $recno) {
 
 	// remove record
 	$query = 'DELETE FROM records WHERE ChallengeId=' . $cid . ' AND PlayerId=' . $pid;
-	$result = mysql_query($query);
-	if ($result === false || mysql_affected_rows() != 1) {
-		trigger_error('Could not remove record! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+	$result = $dbo->query($query);
+	if ($result === false || $result->rowCount() != 1) {
+		trigger_error('Could not remove record! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 	}
 
 	// remove record from specified position
@@ -838,18 +824,18 @@ function ldb_removeRecord($aseco, $cid, $pid, $recno) {
 		$query = 'SELECT DISTINCT playerid,score FROM rs_times t1 WHERE challengeid=' . $cid .
 		         ' AND score=(SELECT MIN(t2.score) FROM rs_times t2 WHERE challengeid=' . $cid .
 		         '            AND t1.playerid=t2.playerid) ORDER BY score,date LIMIT ' . ($ldb_records->max - 1) . ',1';
-		$result = mysql_query($query);
+		$result = $dbo->query($query);
 
-		if ($result !== false && mysql_num_rows($result) == 1) {
-			$timerow = mysql_fetch_object($result);
+		if ($result !== false && $result->rowCount() == 1) {
+			$timerow = $result->fetch(PDO::FETCH_OBJ);
 
 			// get corresponding date/time & checkpoints
 			$query = 'SELECT date,checkpoints FROM rs_times WHERE challengeid=' . $cid .
 			         ' AND playerid=' . $timerow->playerid . ' ORDER BY score,date LIMIT 1';
-			$result2 = mysql_query($query);
-			$timerow2 = mysql_fetch_object($result2);
+			$result2 = $dbo->query($query);
+			$timerow2 = $result2->fetch(PDO::FETCH_OBJ);
 			$datetime = date('Y-m-d H:i:s', $timerow2->date);
-			mysql_free_result($result2);
+			$result2 = null;
 
 			// insert/update new max'th record
 			$query = 'INSERT INTO records
@@ -860,17 +846,17 @@ function ldb_removeRecord($aseco, $cid, $pid, $recno) {
 			           quotedString($timerow2->checkpoints) . ') ' .
 			         'ON DUPLICATE KEY UPDATE ' .
 			          'Score=VALUES(Score), Date=VALUES(Date), Checkpoints=VALUES(Checkpoints)';
-			$result2 = mysql_query($query);
+			$result2 = $dbo->query($query);
 
-			if ($result2 === false || mysql_affected_rows() <= 0) {
-				trigger_error('Could not insert/update record! (' . mysql_errno() . ': ' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+			if ($result2 === false || $result2->rowCount() <= 0) {
+				trigger_error('Could not insert/update record! (' . $result->errorCode() . ': ' . $result2->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 			}
 
 			// get player info
 			$query = 'SELECT * FROM players WHERE id=' . $timerow->playerid;
-			$result2 = mysql_query($query);
-			$playrow = mysql_fetch_array($result2);
-			mysql_free_result($result2);
+			$result2 = $dbo->query($query);
+			$playrow = $result2->fetch(PDO::FETCH_ASSOC);
+			$result2 = null;
 
 			// create record object
 			$record_item = new Record();
@@ -893,7 +879,7 @@ function ldb_removeRecord($aseco, $cid, $pid, $recno) {
 			$ldb_records->addRecord($record_item);
 		}
 		if ($result !== false)
-			mysql_free_result($result);
+			$result = null;
 	}
 
 	// update aseco records
@@ -922,20 +908,20 @@ function ldb_newChallenge($aseco, $challenge) {
 	          GROUP BY r.Id
 	          ORDER BY r.Score ' . $order . ',r.Date ASC
 	          LIMIT ' . $ldb_records->max;
-	$result = mysql_query($query);
+	$result = $dbo->query($query);
 
-	if ($result === false || mysql_num_rows($result) === false) {
+	if ($result === false || $result->rowCount() == 0) {
 		if ($result !== false)
-			mysql_free_result($result);
-		trigger_error('Could not get challenge info! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+			$result = null;
+		trigger_error('Could not get challenge info! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		return;
 	}
 
 	// challenge found?
-	if (mysql_num_rows($result) > 0) {
+	if ($result->rowCount() > 0) {
 
 		// get each record
-		while ($record = mysql_fetch_array($result)) {
+		while ($record = $result2->fetch(PDO::FETCH_ASSOC)) {
 
 			// create record object
 			$record_item = new Record();
@@ -968,11 +954,11 @@ function ldb_newChallenge($aseco, $challenge) {
 		// log records when debugging is set to true
 		//if ($aseco->debug) $aseco->console('ldb_newChallenge records:' . CRLF . print_r($ldb_records, true));
 
-		mysql_free_result($result);
+		$result = null;
 
 	// challenge isn't in database yet
 	} else {
-		mysql_free_result($result);
+		$result = null;
 
 		// then create it
 		$query = 'INSERT INTO challenges
@@ -982,27 +968,27 @@ function ldb_newChallenge($aseco, $challenge) {
 		           quotedString($challenge->name) . ', ' .
 		           quotedString($challenge->author) . ', ' .
 		           quotedString($challenge->environment) . ')';
-		$result = mysql_query($query);
+		$result = $dbo->query($query);
 
 		// challenge was inserted successfully
-		if ($result !== false && mysql_affected_rows() == 1) {
+		if ($result !== false && $result->rowCount() == 1) {
 			// get its Id now
 			$query = 'SELECT Id FROM challenges
 			          WHERE Uid=' . quotedString($challenge->uid);
-			$result = mysql_query($query);
+			$result = $dbo->query($query);
 
-			if ($result !== false && mysql_num_rows($result) == 1) {
-				$row = mysql_fetch_row($result);
+			if ($result !== false && $result->rowCount() == 1) {
+				$row = $result->fetch(PDO::FETCH_NUM);
 				$ldb_challenge->id = $row[0];
 				$challenge->id = $row[0];
 			} else {
 				// challenge Id could not be found
-				trigger_error('Could not get new challenge id! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+				trigger_error('Could not get new challenge id! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 			}
 			if ($result !== false)
-				mysql_free_result($result);
+				$result = null;
 		} else {
-			trigger_error('Could not insert new challenge! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+			trigger_error('Could not insert new challenge! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		}
 	}
 }  // ldb_newChallenge
@@ -1014,10 +1000,39 @@ function ldb_playerWins($aseco, $player) {
 	$query = 'UPDATE players
 	          SET Wins=' . $wins . '
 	          WHERE Login=' . quotedString($player->login);
-	$result = mysql_query($query);
+	$result = $dbo->query($query);
 
-	if ($result === false || mysql_affected_rows() != 1) {
-		trigger_error('Could not update winning player! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+	if ($result === false || $result->rowCount() != 1) {
+		trigger_error('Could not update winning player! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 	}
 }  // ldb_playerWins
+
+// connects to the mysql/mariadb server instance using PDO
+function connect_to_db(): PDO {
+	global $ldb_settings;
+	try {
+		$dbo = new PDO('mysql:host=' . $ldb_settings['mysql']['host'] . 
+					   ';dbname=' . $ldb_settings['mysql']['database'] . 
+					   ';charset=utf8',
+		 $ldb_settings['mysql']['login'],
+		 $ldb_settings['mysql']['password']);
+		 return $dbo;
+	} catch (PDOException $ex) {
+		trigger_error('[LocalDB] Error connecting to MySQL server: ' . $ex->getMessage(), E_USER_ERROR);
+		return null;
+	}
+}  // connect_to_db
+
+function is_connection_alive(PDO $dbo) {
+	if ($dbo === null) {
+		return false;
+	}
+	print($dbo->getAttribute(PDO::ATTR_CONNECTION_STATUS));
+	try {
+		$dbo->query("DO 1;");
+	} catch (PDOException $ex) {
+		return false;
+	}
+	return true;
+}  // is_connection_alive
 ?>
