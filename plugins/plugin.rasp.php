@@ -64,6 +64,7 @@ class Rasp {
 	}  // xmlparse
 
 	function checkTables() {
+		global $dbo;
 
 		// create rs_* tables if needed
 		$query = 'CREATE TABLE IF NOT EXISTS `rs_karma` (
@@ -75,14 +76,14 @@ class Rasp {
 		           UNIQUE KEY `PlayerId` (`PlayerId`,`ChallengeId`),
 		           KEY `ChallengeId` (`ChallengeId`)
 		         ) ENGINE=MyISAM';
-		mysql_query($query);
+		$dbo->query($query);
 
 		$query = 'CREATE TABLE IF NOT EXISTS `rs_rank` (
 		           `playerID` mediumint(9) NOT NULL default 0,
 		           `avg` float NOT NULL default 0,
 		           KEY `playerID` (`playerID`)
 		         ) ENGINE=MyISAM';
-		mysql_query($query);
+		$dbo->query($query);
 
 		$query = 'CREATE TABLE IF NOT EXISTS `rs_times` (
 		           `ID` int(11) NOT NULL auto_increment,
@@ -95,14 +96,14 @@ class Rasp {
 		           KEY `playerID` (`playerID`,`challengeID`),
 		           KEY `challengeID` (`challengeID`)
 		         ) ENGINE=MyISAM';
-		mysql_query($query);
+		$dbo->query($query);
 
 		// check for rs_* tables
 		$tables = array();
-		$res = mysql_query('SHOW TABLES');
-		while ($row = mysql_fetch_row($res))
+		$res = $dbo->query('SHOW TABLES');
+		while ($row = $res->fetch(PDO::FETCH_NUM))
 			$tables[] = $row[0];
-		mysql_free_result($res);
+		$res = null;
 		$check = array();
 		$check[1] = in_array('rs_rank', $tables);
 		$check[2] = in_array('rs_times', $tables);
@@ -110,63 +111,63 @@ class Rasp {
 
 		// get list of rs_times columns
 		$fields = array();
-		$res = mysql_query('SHOW COLUMNS FROM rs_times');
-		while ($row = mysql_fetch_row($res))
+		$res = $dbo->query('SHOW COLUMNS FROM rs_times');
+		while ($row = $res->fetch(PDO::FETCH_NUM))
 			$fields[] = $row[0];
-		mysql_free_result($res);
+		$res = null;
 
 		// rename column 'trackID' (v0.7) to 'challengeID' (v0.8+) if not yet done
 		if (in_array('trackID', $fields)) {
 			$this->aseco->console("[RASP] Rename 'rs_times' column 'trackID'...");
-			mysql_query('ALTER TABLE rs_times CHANGE trackID challengeID mediumint(9) NOT NULL default 0');
+			$dbo->query('ALTER TABLE rs_times CHANGE trackID challengeID mediumint(9) NOT NULL default 0');
 		}
 		// add rs_times 'checkpoints' column
 		if (!in_array('checkpoints', $fields)) {
 			$this->aseco->console("[RASP] Add 'rs_times' column 'trackID'...");
-			mysql_query('ALTER TABLE rs_times ADD checkpoints text NOT NULL');
+			$dbo->query('ALTER TABLE rs_times ADD checkpoints text NOT NULL');
 		}
 
 		// enlarge rs_times 'ID' & 'score' columns
-		$res = mysql_query('DESC rs_times ID');
-		$row = mysql_fetch_row($res);
-		mysql_free_result($res);
+		$res = $dbo->query('DESC rs_times ID');
+		$row = $res->fetch(PDO::FETCH_NUM);
+		$res = null;
 		if ($row[1] != 'int(11)') {
 			$this->aseco->console("[RASP] Alter 'rs_times' column 'ID'...");
-			mysql_query('ALTER TABLE rs_times MODIFY ID int(11) auto_increment');
+			$dbo->query('ALTER TABLE rs_times MODIFY ID int(11) auto_increment');
 		}
-		$res = mysql_query('DESC rs_times score');
-		$row = mysql_fetch_row($res);
-		mysql_free_result($res);
+		$res = $dbo->query('DESC rs_times score');
+		$row = $res->fetch(PDO::FETCH_NUM);
+		$res = null;
 		if ($row[1] != 'int(11)') {
 			$this->aseco->console("[RASP] Alter 'rs_times' column 'score'...");
-			mysql_query('ALTER TABLE rs_times MODIFY score int(11) NOT NULL default 0');
+			$dbo->query('ALTER TABLE rs_times MODIFY score int(11) NOT NULL default 0');
 		}
 
 		// change rs_times old 'rs_times_player_track' key into new 'playerID' key
 		//  and add rs_times new 'ChallengeId' key
 		$fields = array('rs_times_player_track' => 0, 'challengeID' => 0);
-		$result = mysql_query('SHOW INDEX FROM rs_times');
-		while ($row = mysql_fetch_row($result)) {
+		$result = $dbo->query('SHOW INDEX FROM rs_times');
+		while ($row = $result->fetch(PDO::FETCH_NUM)) {
 			if (isset($fields[$row[2]]))
 				$fields[$row[2]]++;
 		}
-		mysql_free_result($result);
+		$result = null;
 		if ($fields['rs_times_player_track'] == 2 && $fields['challengeID'] == 0) {
 			$this->aseco->console("[RASP] Drop 'rs_times' key 'rs_times_player_track'...");
-			mysql_query("ALTER TABLE rs_times DROP KEY rs_times_player_track");
+			$dbo->query("ALTER TABLE rs_times DROP KEY rs_times_player_track");
 			$this->aseco->console("[RASP] Add 'rs_times' key 'playerID'...");
-			mysql_query("ALTER TABLE rs_times ADD KEY playerID (playerID, challengeID)");
+			$dbo->query("ALTER TABLE rs_times ADD KEY playerID (playerID, challengeID)");
 			$this->aseco->console("[RASP] Add 'rs_times' key 'challengeID'...");
-			mysql_query("ALTER TABLE rs_times ADD KEY challengeID (challengeID)");
+			$dbo->query("ALTER TABLE rs_times ADD KEY challengeID (challengeID)");
 		}
 
 		// reduce rs_karma 'Score' column
-		$res = mysql_query('DESC rs_karma Score');
-		$row = mysql_fetch_row($res);
-		mysql_free_result($res);
+		$res = $dbo->query('DESC rs_karma Score');
+		$row = $res->fetch(PDO::FETCH_NUM);
+		$res = null;
 		if ($row[1] != 'tinyint(4)') {
 			$this->aseco->console("[RASP] Alter 'rs_karma' column 'score'...");
-			mysql_query('ALTER TABLE rs_karma MODIFY Score tinyint(4) NOT NULL default 0');
+			$dbo->query('ALTER TABLE rs_karma MODIFY Score tinyint(4) NOT NULL default 0');
 		}
 
 		return ($check[1] && $check[2] && $check[3]);
@@ -174,63 +175,64 @@ class Rasp {
 
 	function cleanData () {
 		global $prune_records_times;
+		global $dbo;
 
 		$this->aseco->console('[RASP] Cleaning up unused data');
 		$sql = "DELETE FROM challenges WHERE uid=''";
-		mysql_query($sql);
+		$dbo->query($sql);
 		$sql = "DELETE FROM players WHERE login=''";
-		mysql_query($sql);
+		$dbo->query($sql);
 
 		if (!$prune_records_times) return;
 		// prune records and rs_times entries for players & challenges deleted from database
 
 		$deletelist = array();
 		$sql = 'SELECT DISTINCT r.ChallengeId,c.Id FROM records r LEFT JOIN challenges c ON (r.ChallengeId=c.Id) WHERE c.Id IS NULL';
-		$res = mysql_query($sql);
-		if (mysql_num_rows($res) > 0) {
-			while ($row = mysql_fetch_row($res))
+		$res = $dbo->query($sql);
+		if ($res->rowCount() > 0) {
+			while ($row = $res->fetch(PDO::FETCH_NUM))
 				$deletelist[] = $row[0];
 			$this->aseco->console('[RASP] ...Deleting records for deleted challenges: ' . implode(',', $deletelist));
 			$sql = 'DELETE FROM records WHERE ChallengeId IN (' . implode(',', $deletelist) . ')';
-			mysql_query($sql);
+			$dbo->query($sql);
 		}
-		mysql_free_result($res);
+		$res = null;
 
 		$deletelist = array();
 		$sql = 'SELECT DISTINCT r.PlayerId,p.Id FROM records r LEFT JOIN players p ON (r.PlayerId=p.Id) WHERE p.Id IS NULL';
-		$res = mysql_query($sql);
-		if (mysql_num_rows($res) > 0) {
-			while ($row = mysql_fetch_row($res))
+		$res = $dbo->query($sql);
+		if ($res->rowCount() > 0) {
+			while ($row = $res->fetch(PDO::FETCH_NUM))
 				$deletelist[] = $row[0];
 			$this->aseco->console('[RASP] ...Deleting records for deleted players: ' . implode(',', $deletelist));
 			$sql = 'DELETE FROM records WHERE PlayerId IN (' . implode(',', $deletelist) . ')';
-			mysql_query($sql);
+			$dbo->query($sql);
 		}
-		mysql_free_result($res);
+		$res = null;
 
 		$deletelist = array();
 		$sql = 'SELECT DISTINCT r.challengeID,c.Id FROM rs_times r LEFT JOIN challenges c ON (r.challengeID=c.Id) WHERE c.Id IS NULL';
-		$res = mysql_query($sql);
-		if (mysql_num_rows($res) > 0) {
-			while ($row = mysql_fetch_row($res))
+		$res = $dbo->query($sql);
+		if ($res->rowCount() > 0) {
+			while ($row = $res->fetch(PDO::FETCH_NUM))
 				$deletelist[] = $row[0];
 			$this->aseco->console('[RASP] ...Deleting rs_times for deleted challenges: ' . implode(',', $deletelist));
 			$sql = 'DELETE FROM rs_times WHERE challengeID IN (' . implode(',', $deletelist) . ')';
-			mysql_query($sql);
+			$dbo->query($sql);
 		}
-		mysql_free_result($res);
+		$res = null;
 
 		$deletelist = array();
 		$sql = 'SELECT DISTINCT r.playerID,p.Id FROM rs_times r LEFT JOIN players p ON (r.playerID=p.Id) WHERE p.Id IS NULL';
-		$res = mysql_query($sql);
-		if (mysql_num_rows($res) > 0) {
-			while ($row = mysql_fetch_row($res))
+		$res = $dbo->query($sql);
+		if ($res->rowCount() > 0) {
+			while ($row = $res->fetch(PDO::FETCH_NUM))
 				$deletelist[] = $row[0];
 			$this->aseco->console('[RASP] ...Deleting rs_times for deleted players: ' . implode(',', $deletelist));
 			$sql = 'DELETE FROM rs_times WHERE playerID IN (' . implode(',', $deletelist) . ')';
-			mysql_query($sql);
+			$dbo->query($sql);
 		}
-		mysql_free_result($res);
+		$res = null;
 	}  // cleanData
 
 	function getChallenges() {
@@ -245,11 +247,11 @@ class Rasp {
 				$query = 'INSERT INTO challenges (Uid, Name, Author, Environment)
 				          VALUES (' . quotedString($row['UId']) . ', ' . quotedString($row['Name']) . ', '
 				                    . quotedString($row['Author']) . ', ' . quotedString($row['Environnement']) . ')';
-				mysql_query($query);
-				if (mysql_affected_rows() != 1) {
-					trigger_error('{RASP_ERROR} Could not insert challenge! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+				$result = $dbo->query($query);
+				if ($result->rownCount() != 1) {
+					trigger_error('{RASP_ERROR} Could not insert challenge! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 				} else {
-					$tid = mysql_insert_id();
+					$tid = $dbo->lastInsertId();
 				}
 			}
 			if ($tid != 0)
@@ -308,18 +310,18 @@ class Rasp {
 		$total = count($tracks);
 
 		// erase old average data
-		mysql_query('TRUNCATE TABLE rs_rank');
+		$dbo->query('TRUNCATE TABLE rs_rank');
 
 		// get list of players with at least $minrecs records (possibly unranked)
 		$query = 'SELECT PlayerId, COUNT(*) AS cnt
 		          FROM records
 		          GROUP BY PlayerId
 		          HAVING cnt >=' . $minrank;
-		$res = mysql_query($query);
-		while ($row = mysql_fetch_object($res)) {
+		$res = $dbo->query($query);
+		while ($row = $res->fetch(PDO::FETCH_OBJ)) {
 			$players[$row->PlayerId] = array(0, 0);  // sum, count
 		}
-		mysql_free_result($res);
+		$res = null;
 
 		if (!empty($players)) {
 			// get ranked records for all tracks
@@ -329,10 +331,10 @@ class Rasp {
 				          WHERE challengeid=' . $track . '
 				          ORDER BY score ' . $order . ', date ASC
 				          LIMIT ' . $maxrecs;
-				$res = mysql_query($query);
-				if (mysql_num_rows($res) > 0) {
+				$res = $dbo->query($query);
+				if ($res->rowCount() > 0) {
 					$i = 1;
-					while ($row = mysql_fetch_object($res)) {
+					while ($row = $res->fetch(PDO::FETCH_OBJ)) {
 						$pid = $row->PlayerId;
 						if (isset($players[$pid])) {
 							$players[$pid][0] += $i;
@@ -341,7 +343,7 @@ class Rasp {
 						$i++;
 					}
 				}
-				mysql_free_result($res);
+				$res = null;
 			}
 
 			// one-shot insert for queries up to 1 MB (default max_allowed_packet),
@@ -354,11 +356,11 @@ class Rasp {
 				$query .= '(' . $player . ',' . round($avg * 10000) . '),';
 			}
 			$query = substr($query, 0, strlen($query)-1);  // strip trailing ','
-			mysql_query($query);
-			if (mysql_affected_rows() < 1) {
-				trigger_error('{RASP_ERROR} Could not insert any player averages! (' . mysql_error() . ')', E_USER_WARNING);
-			} elseif (mysql_affected_rows() != count($players)) {
-				trigger_error('{RASP_ERROR} Could not insert all ' . count($players) . ' player averages! (' . mysql_error() . ')', E_USER_WARNING);
+			$result = $dbo->query($query);
+			if ($result->rowCount() < 1) {
+				trigger_error('{RASP_ERROR} Could not insert any player averages! (' . $result->errorInfo() . ')', E_USER_WARNING);
+			} elseif ($result->rowCount() != count($players)) {
+				trigger_error('{RASP_ERROR} Could not insert all ' . count($players) . ' player averages! (' . $result->errorInfo() . ')', E_USER_WARNING);
 				// increase MySQL's max_allowed_packet setting
 			}
 		}
@@ -377,6 +379,7 @@ class Rasp {
 
 	function showPb($player, $track, $always_show) {
 		global $maxrecs, $maxavg;
+		global $pdo;
 
 		$found = false;
 		// find ranked record
@@ -408,25 +411,25 @@ class Rasp {
 			$query2 = 'SELECT score FROM rs_times
 			           WHERE playerID=' . $player->id . ' AND challengeID=' . $track . '
 			           ORDER BY score ' . $order . ' LIMIT 1';
-			$res2 = mysql_query($query2);
-			if (mysql_num_rows($res2) > 0) {
-				$row = mysql_fetch_object($res2);
+			$res2 = $dbo->query($query2);
+			if ($res2->rowCount() > 0) {
+				$row = $res2->fetch(PDO::FETCH_OBJ);
 				$ret['time'] = $row->score;
 				$ret['rank'] = '$nUNRANKED$m';
 				$found = true;
 			}
-			mysql_free_result($res2);
+			$res2 = null;
 		}
 
 		// compute average time of last $maxavg times
 		$query = 'SELECT score FROM rs_times
 		          WHERE playerID=' . $player->id . ' AND challengeID=' . $track . '
 		          ORDER BY date DESC LIMIT ' . $maxavg;
-		$res = mysql_query($query);
-		$size = mysql_num_rows($res);
+		$res = $dbo->query($query);
+		$size = $res->rowCount();
 		if ($size > 0) {
 			$total = 0;
-			while ($row = mysql_fetch_object($res)) {
+			while ($row = $res->fetch(PDO::FETCH_OBJ)) {
 				$total += $row->score;
 			}
 			$avg = floor($total / $size);
@@ -435,7 +438,7 @@ class Rasp {
 		} else {
 			$avg = 'No Average';
 		}
-		mysql_free_result($res);
+		$res = null;
 
 		if ($found) {
 			$message = formatText($this->messages['PB'][0],
@@ -476,16 +479,16 @@ class Rasp {
 			$query2 = 'SELECT score FROM rs_times
 			           WHERE playerID=' . $pid . ' AND challengeID=' . $track . '
 			           ORDER BY score ' . $order . ' LIMIT 1';
-			$res2 = mysql_query($query2);
-			if (mysql_num_rows($res2) > 0) {
-				$row = mysql_fetch_object($res2);
+			$res2 = $dbo->query($query2);
+			if ($res2->rowCount() > 0) {
+				$row = $res2->fetch(PDO::FETCH_OBJ);
 				$ret['time'] = $row->score;
 				$ret['rank'] = '$nUNRANKED$m';
 			} else {
 				$ret['time'] = 0;
 				$ret['rank'] = '$nNONE$m';
 			}
-			mysql_free_result($res2);
+			$res2 = null;
 		}
 
 		return $ret;
@@ -493,32 +496,33 @@ class Rasp {
 
 	function showRank($login) {
 		global $minrank;
+		global $dbo;
 
 		$pid = $this->aseco->getPlayerId($login);
 		$query = 'SELECT avg FROM rs_rank
 		          WHERE playerID=' . $pid;
-		$res = mysql_query($query);
-		if (mysql_num_rows($res) > 0) {
-			$row = mysql_fetch_array($res);
+		$res = $dbo->query($query);
+		if ($res->rowCount() > 0) {
+			$row = $res->fetch(PDO::FETCH_ASSOC);
 			$query2 = 'SELECT playerid FROM rs_rank ORDER BY avg ASC';
-			$res2 = mysql_query($query2);
+			$res2 = $dbo->query($query2);
 			$rank = 1;
-			while ($row2 = mysql_fetch_array($res2)) {
+			while ($row2 = $res2->fetch(PDO::FETCH_ASSOC)) {
 				if ($row2['playerid'] == $pid) break;
 				$rank++;
 			}
 			$message = formatText($this->messages['RANK'][0],
-			                      $rank, mysql_num_rows($res2),
+			                      $rank, $res2->rowCount(),
 			                      sprintf("%4.1F", $row['avg'] / 10000));
 			$message = $this->aseco->formatColors($message);
 			$this->aseco->client->query('ChatSendServerMessageToLogin', $message, $login);
-			mysql_free_result($res2);
+			$res2 = null;
 		} else {
 			$message = formatText($this->messages['RANK_NONE'][0], $minrank);
 			$message = $this->aseco->formatColors($message);
 			$this->aseco->client->query('ChatSendServerMessageToLogin', $message, $login);
 		}
-		mysql_free_result($res);
+		$res = null;
 	}  // showRank
 
 	function getRank($login) {
@@ -526,24 +530,24 @@ class Rasp {
 		$pid = $this->aseco->getPlayerId($login);
 		$query = 'SELECT avg FROM rs_rank
 		          WHERE playerID=' . $pid;
-		$res = mysql_query($query);
-		if (mysql_num_rows($res) > 0) {
-			$row = mysql_fetch_array($res);
+		$res = $dbo->query($query);
+		if ($res->rowCount() > 0) {
+			$row = $res->fetch(PDO::FETCH_ASSOC);
 			$query2 = 'SELECT playerid FROM rs_rank ORDER BY avg ASC';
-			$res2 = mysql_query($query2);
+			$res2 = $dbo->query($query2);
 			$rank = 1;
-			while ($row2 = mysql_fetch_array($res2)) {
+			while ($row2 = $res2->fetch(PDO::FETCH_ASSOC)) {
 				if ($row2['playerid'] == $pid) break;
 				$rank++;
 			}
 			$message = formatText('{1}/{2} Avg: {3}',
-			                      $rank, mysql_num_rows($res2),
+			                      $rank, $res2->rowCount(),
 			                      sprintf("%4.1F", $row['avg'] / 10000));
-			mysql_free_result($res2);
+			$res2 = null;
 		} else {
 			$message = 'None';
 		}
-		mysql_free_result($res);
+		$res = null;
 		return $message;
 	}  // getRank
 
@@ -588,9 +592,9 @@ class Rasp {
 			$query = 'INSERT INTO rs_times (playerID, challengeID, score, date, checkpoints)
 			          VALUES (' . $pid . ', ' . $time->challenge->id . ', ' . $time->score . ', '
 			                    . quotedString(time()) . ', ' . quotedString($cps) . ')';
-			mysql_query($query);
-			if (mysql_affected_rows() != 1) {
-				trigger_error('{RASP_ERROR} Could not insert time! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+			$result = $dbo->query($query);
+			if ($result->rownCount() != 1) {
+				trigger_error('{RASP_ERROR} Could not insert time! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 			}
 		} else {
 			trigger_error('{RASP_ERROR} Could not get Player ID for ' . $time->player->login . ' !', E_USER_WARNING);
@@ -600,9 +604,9 @@ class Rasp {
 	function deleteTime($cid, $pid) {
 
 		$query = 'DELETE FROM rs_times WHERE challengeID=' . $cid . ' AND playerID=' . $pid;
-		mysql_query($query);
-		if (mysql_affected_rows() <= 0) {
-			trigger_error('{RASP_ERROR} Could not remove time(s)! (' . mysql_error() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
+		$result = $dbo->query($query);
+		if ($result->rownCount() <= 0) {
+			trigger_error('{RASP_ERROR} Could not remove time(s)! (' . $result->errorInfo() . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		}
 	}  // deleteTime
 
@@ -683,17 +687,17 @@ function chat_top10($aseco, $command) {
 	$query = 'SELECT p.NickName, r.avg FROM players p
 	          LEFT JOIN rs_rank r ON (p.Id=r.PlayerId)
 	          WHERE r.avg!=0 ORDER BY r.avg ASC LIMIT ' . $top;
-	$res = mysql_query($query);
+	$res = $dbo->query($query);
 
-	if (mysql_num_rows($res) == 0) {
+	if ($res->rowCount() == 0) {
 		$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors('{#server}> {#error}No ranked players found!'), $player->login);
-		mysql_free_result($res);
+		$res = null;
 		return;
 	}
 
 	if ($aseco->server->getGame() == 'TMN') {
 		$i = 1;
-		while ($row = mysql_fetch_object($res)) {
+		while ($row = $res->fetch(PDO::FETCH_OBJ)) {
 			$nick = $row->NickName;
 			if (!$aseco->settings['lists_colornicks'])
 				$nick = stripColors($nick);
@@ -707,7 +711,7 @@ function chat_top10($aseco, $command) {
 
 	} elseif ($aseco->server->getGame() == 'TMF') {
 		$i = 1;
-		while ($row = mysql_fetch_object($res)) {
+		while ($row = $res->fetch(PDO::FETCH_OBJ)) {
 			$nick = $row->NickName;
 			if (!$aseco->settings['lists_colornicks'])
 				$nick = stripColors($nick);
@@ -724,7 +728,7 @@ function chat_top10($aseco, $command) {
 
 	} else {  // TMS/TMO
 		$i = 1;
-		while ($row = mysql_fetch_object($res)) {
+		while ($row = $res->fetch(PDO::FETCH_OBJ)) {
 			$recs .= LF . $i . '.  ' . $bgn . str_pad(stripColors($row->NickName), 15)
 			         . $end . ' - ' . sprintf("%4.1F", $row->avg / 10000);
 			$i++;
@@ -733,7 +737,7 @@ function chat_top10($aseco, $command) {
 		// show chat message
 		$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($recs), $player->login);
 	}
-	mysql_free_result($res);
+	$res = null;
 }  // chat_top10
 
 function chat_top100($aseco, $command) {
@@ -758,11 +762,11 @@ function chat_top100($aseco, $command) {
 	$query = 'SELECT p.NickName, r.avg FROM players p
 	          LEFT JOIN rs_rank r ON (p.Id=r.PlayerId)
 	          WHERE r.avg!=0 ORDER BY r.avg ASC LIMIT ' . $top;
-	$res = mysql_query($query);
+	$res = $dbo->query($query);
 
-	if (mysql_num_rows($res) == 0) {
+	if ($res->rowCount() == 0) {
 		$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors('{#server}> {#error}No ranked players found!'), $player->login);
-		mysql_free_result($res);
+		$res = null;
 		return;
 	}
 
@@ -772,7 +776,7 @@ function chat_top100($aseco, $command) {
 		$player->msgs = array();
 		$player->msgs[0] = 1;
 		$i = 1;
-		while ($row = mysql_fetch_object($res)) {
+		while ($row = $res->fetch(PDO::FETCH_OBJ)) {
 			$nick = $row->NickName;
 			if (!$aseco->settings['lists_colornicks'])
 				$nick = stripColors($nick);
@@ -805,7 +809,7 @@ function chat_top100($aseco, $command) {
 		$extra = ($aseco->settings['lists_colornicks'] ? 0.2 : 0);
 		$player->msgs[0] = array(1, $head, array(0.7+$extra, 0.1, 0.45+$extra, 0.15), array('BgRaceScore2', 'LadderRank'));
 		$i = 1;
-		while ($row = mysql_fetch_object($res)) {
+		while ($row = $res->fetch(PDO::FETCH_OBJ)) {
 			$nick = $row->NickName;
 			if (!$aseco->settings['lists_colornicks'])
 				$nick = stripColors($nick);
@@ -827,7 +831,7 @@ function chat_top100($aseco, $command) {
 		display_manialink_multi($player);
 	}
 
-	mysql_free_result($res);
+	$res = null;
 }  // chat_top100
 
 function chat_topwins($aseco, $command) {
@@ -851,7 +855,7 @@ function chat_topwins($aseco, $command) {
 	}
 
 	$query = 'SELECT NickName, Wins FROM players ORDER BY Wins DESC LIMIT ' . $top;
-	$res = mysql_query($query);
+	$res = $dbo->query($query);
 
 	if ($aseco->server->getGame() == 'TMN') {
 		$wins = '';
@@ -859,8 +863,8 @@ function chat_topwins($aseco, $command) {
 		$lines = 0;
 		$player->msgs = array();
 		$player->msgs[0] = 1;
-		if (mysql_num_rows($res) > 0) {
-			while ($row = mysql_fetch_object($res)) {
+		if ($res->rowCount() > 0) {
+			while ($row = $res->fetch(PDO::FETCH_OBJ)) {
 				$nick = $row->NickName;
 				if (!$aseco->settings['lists_colornicks'])
 					$nick = stripColors($nick);
@@ -893,8 +897,8 @@ function chat_topwins($aseco, $command) {
 		// reserve extra width for $w tags
 		$extra = ($aseco->settings['lists_colornicks'] ? 0.2 : 0);
 		$player->msgs[0] = array(1, $head, array(0.7+$extra, 0.1, 0.45+$extra, 0.15), array('BgRaceScore2', 'LadderRank'));
-		if (mysql_num_rows($res) > 0) {
-			while ($row = mysql_fetch_object($res)) {
+		if ($res->rowCount() > 0) {
+			while ($row = $res->fetch(PDO::FETCH_OBJ)) {
 				$nick = $row->NickName;
 				if (!$aseco->settings['lists_colornicks'])
 					$nick = stripColors($nick);
@@ -919,7 +923,7 @@ function chat_topwins($aseco, $command) {
 	} else {  // TMS/TMO
 		$wins = $head;
 		$i = 1;
-		while ($row = mysql_fetch_object($res)) {
+		while ($row = $res->fetch(PDO::FETCH_OBJ)) {
 			$wins .= LF . $i . '.  ' . $bgn . str_pad(stripColors($row->NickName), 15)
 			         . $end . ' - ' . $row->Wins;
 			$i++;
@@ -928,7 +932,7 @@ function chat_topwins($aseco, $command) {
 		$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($wins), $player->login);
 	}
 
-	mysql_free_result($res);
+	$res = null;
 }  // chat_topwins
 
 function chat_active($aseco, $command) {
@@ -952,7 +956,7 @@ function chat_active($aseco, $command) {
 	}
 
 	$query = 'SELECT NickName, TimePlayed FROM players ORDER BY TimePlayed DESC LIMIT ' . $top;
-	$res = mysql_query($query);
+	$res = $dbo->query($query);
 
 	if ($aseco->server->getGame() == 'TMN') {
 		$active = '';
@@ -960,7 +964,7 @@ function chat_active($aseco, $command) {
 		$lines = 0;
 		$player->msgs = array();
 		$player->msgs[0] = 1;
-		while ($row = mysql_fetch_object($res)) {
+		while ($row = $res->fetch(PDO::FETCH_OBJ)) {
 			$nick = $row->NickName;
 			if (!$aseco->settings['lists_colornicks'])
 				$nick = stripColors($nick);
@@ -993,7 +997,7 @@ function chat_active($aseco, $command) {
 		// reserve extra width for $w tags
 		$extra = ($aseco->settings['lists_colornicks'] ? 0.2 : 0);
 		$player->msgs[0] = array(1, $head, array(0.8+$extra, 0.1, 0.45+$extra, 0.25), array('BgRaceScore2', 'LadderRank'));
-		while ($row = mysql_fetch_object($res)) {
+		while ($row = $res->fetch(PDO::FETCH_OBJ)) {
 			$nick = $row->NickName;
 			if (!$aseco->settings['lists_colornicks'])
 				$nick = stripColors($nick);
@@ -1017,7 +1021,7 @@ function chat_active($aseco, $command) {
 	} else {  // TMS/TMO
 		$active = $head;
 		$i = 1;
-		while ($row = mysql_fetch_object($res)) {
+		while ($row = $res->fetch(PDO::FETCH_OBJ)) {
 			$active .= LF . $i . '.  ' . $bgn . str_pad(stripColors($row->NickName), 15)
 			           . $end . ' - ' . formatTimeH($row->TimePlayed * 1000, false);
 			$i++;
@@ -1026,7 +1030,7 @@ function chat_active($aseco, $command) {
 		$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($active), $player->login);
 	}
 
-	mysql_free_result($res);
+	$res = null;
 }  // chat_active
 
 
@@ -1047,19 +1051,19 @@ function event_onstartup($aseco) {
 
 		// get list of challenge IDs with records in the database
 		$query = 'SELECT DISTINCT ChallengeId FROM records';
-		$res = mysql_query($query);
-		while ($row = mysql_fetch_row($res)) {
+		$res = $dbo->query($query);
+		while ($row = $res->fetch(PDO::FETCH_NUM)) {
 			$track = $row[0];
 			// delete records & rs_times if it's not in server's challenge list
 			if (!in_array($track, $tracks)) {
 				$aseco->console('[RASP] ...challengeID: ' . $track);
 				$query = 'DELETE FROM records WHERE ChallengeId=' . $track;
-				mysql_query($query);
+				$dbo->query($query);
 				$query = 'DELETE FROM rs_times WHERE challengeID=' . $track;
-				mysql_query($query);
+				$dbo->query($query);
 			}
 		}
-		mysql_free_result($res);
+		$res = null;
 	}
 }  // event_onstartup
 ?>
