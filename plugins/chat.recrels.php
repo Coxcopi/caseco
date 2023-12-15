@@ -78,6 +78,7 @@ function chat_lastrec($aseco, $command) {
 }  // chat_lastrec
 
 function chat_nextrec($aseco, $command) {
+	global $dbo;
 
 	$login = $command['author']->login;
 
@@ -141,12 +142,12 @@ function chat_nextrec($aseco, $command) {
 			          WHERE playerID=' . $command['author']->id . ' AND
 			                challengeID=' . $aseco->server->challenge->id . '
 			          ORDER BY score ' . $order . ' LIMIT 1';
-			$result = mysql_query($query);
-			if (mysql_num_rows($result) > 0) {
-				$unranked = mysql_fetch_object($result);
+			$result = $dbo->query($query);
+			if ($result->rowCount() > 0) {
+				$unranked = $result->fetch(PDO::FETCH_OBJ);
 				$found = true;
 			}
-			mysql_free_result($result);
+			$result = null;
 
 			if ($found) {
 				// get the last ranked record

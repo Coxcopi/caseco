@@ -144,6 +144,7 @@ function chat_clans($aseco, $command) {
 }  // chat_clans
 
 function chat_topclans($aseco, $command) {
+	global $dbo;
 
 	$player = $command['author'];
 
@@ -169,18 +170,18 @@ function chat_topclans($aseco, $command) {
 	            GROUP BY TeamName) as sub
 	          WHERE sub.count>=' . $aseco->settings['topclans_minplayers'] . '
 	          ORDER BY sub.teamrank LIMIT ' . $top;
-	$res = mysql_query($query);
+	$res = $dbo->query($query);
 
-	if (mysql_num_rows($res) == 0) {
+	if ($res->rowCount() == 0) {
 		$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors('{#server}> {#error}No clan(s) found!'), $player->login);
-		mysql_free_result($res);
+		$res = null;
 		return false;
 	}
 
 	// compile the message with sorted clans
 	if ($aseco->server->getGame() == 'TMN') {
 		$i = 1;
-		while ($row = mysql_fetch_object($res)) {
+		while ($row = $res->fetch(PDO::FETCH_NUM)) {
 			$msg .= LF . $i . '.  ' . $bgn . str_pad($row->TeamName . '$z $n(' . $row->count . ')$m', 35)
 			        . ' - ' . sprintf("%4.1F", $row->teamrank/10000);
 			$i++;
@@ -191,7 +192,7 @@ function chat_topclans($aseco, $command) {
 
 	} elseif ($aseco->server->getGame() == 'TMF') {
 		$i = 1;
-		while ($row = mysql_fetch_object($res)) {
+		while ($row = $res->fetch(PDO::FETCH_OBJ)) {
 			$msg[] = array($i . '.',
 			               $bgn . $row->TeamName . '$z $n(' . $row->count . ')$m',
 			               sprintf("%4.1F", $row->teamrank/10000));
@@ -203,7 +204,7 @@ function chat_topclans($aseco, $command) {
 
 	} else {  // TMS/TMO
 		$i = 1;
-		while ($row = mysql_fetch_object($res)) {
+		while ($row = $res->fetch(PDO::FETCH_OBJ)) {
 			$msg .= LF . $i . '.  ' . $bgn . str_pad(stripColors($row->TeamName)
 			        . $end . ' $n(' . $row->count . ')$m', 25)
 			        . ' - ' . sprintf("%4.1F", $row->teamrank/10000);
@@ -212,6 +213,6 @@ function chat_topclans($aseco, $command) {
 		// show chat message
 		$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($msg), $player->login);
 	}
-	mysql_free_result($res);
+	$res = null;
 }  // chat_topclans
 ?>

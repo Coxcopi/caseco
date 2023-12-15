@@ -17,7 +17,7 @@ Aseco::addChatCommand('settings', 'Displays your personal settings');
 
 // calls function get_recs() from chat.records2.php
 function chat_stats($aseco, $command) {
-	global $rasp, $feature_ranks, $maxrecs;
+	global $rasp, $feature_ranks, $maxrecs, $dbo;
 
 	$player = $command['author'];
 	$target = $player;
@@ -47,9 +47,9 @@ function chat_stats($aseco, $command) {
 		// obtain last online timestamp
 		$query = 'SELECT UpdatedAt FROM players
 		          WHERE login=' . quotedString($target->login);
-		$result = mysql_query($query);
-		$laston = mysql_fetch_row($result);
-		mysql_free_result($result);
+		$result = $dbo->query($query);
+		$laston = $result->fetch(PDO::FETCH_NUM);
+		$result = null;
 
 		$records = 0;
 		if ($list = get_recs($target->id)) {  // from chat.records2.php
@@ -126,9 +126,9 @@ function chat_stats($aseco, $command) {
 		// obtain last online timestamp
 		$query = 'SELECT UpdatedAt FROM players
 		          WHERE login=' . quotedString($target->login);
-		$result = mysql_query($query);
-		$laston = mysql_fetch_row($result);
-		mysql_free_result($result);
+		$result = $pdo->query($query);
+		$laston = $result->fetch(PDO::FETCH_NUM);
+		$result = null;
 
 		$records = 0;
 		if ($list = get_recs($target->id)) {  // from chat.records2.php

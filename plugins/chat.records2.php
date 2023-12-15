@@ -243,7 +243,7 @@ function chat_worst($aseco, $command) {
  * chat_stats (in chat.stats.php).
  */
 function get_recs($pid) {
-	global $aseco;
+	global $aseco, $dbo;
 
 	// get player's record for each track
 	$list = array();
@@ -251,10 +251,10 @@ function get_recs($pid) {
 
 	$query = 'SELECT Uid,PlayerId FROM records r LEFT JOIN challenges c ON (r.ChallengeId=c.Id)
 	          WHERE Uid IS NOT NULL ORDER BY ChallengeId ASC,Score ' . $order . ',Date ASC';
-	$result = mysql_query($query);
+	$result = $dbo->query($query);
 
 	$last = '';
-	while ($row = mysql_fetch_object($result)) {
+	while ($row = $result->fetch(PDO::FETCH_OBJ)) {
 		// check for new track & reset rank
 		if ($last != $row->Uid) {
 			$last = $row->Uid;
@@ -271,7 +271,7 @@ function get_recs($pid) {
 		$pos++;
 	}
 
-	mysql_free_result($result);
+	$result = null;
 	// return list
 	return $list;
 }  // get_recs
@@ -563,6 +563,7 @@ function top3_compare($a, $b) {
 }  // top3_compare
 
 function chat_topsums($aseco, $command) {
+	global $dbo;
 
 	$player = $command['author'];
 
@@ -594,9 +595,9 @@ function chat_topsums($aseco, $command) {
 
 	// get current list of track IDs
 	$query = 'SELECT Id,Uid FROM challenges';
-	$result = mysql_query($query);
+	$result = $dbo->query($query);
 	$tidlist = array();
-	while ($row = mysql_fetch_object($result)) {
+	while ($row = $result->fetch(PDO::FETCH_OBJ)) {
 		if (array_key_exists($row->Uid, $newlist))
 			$tidlist[] = $row->Id;
 	}
@@ -610,22 +611,22 @@ function chat_topsums($aseco, $command) {
 		          WHERE players.id=records.playerid AND
 		                challengeid=' . $tid . '
 		          ORDER BY score ' . $order . ',date ASC LIMIT 3';
-		$result = mysql_query($query);
+		$result = $dbo->query($query);
 
 		// tally top-3 record totals by login
-		if ($row = mysql_fetch_array($result)) {
+		if ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 			if (isset($recs[$row[0]])) {
 				$recs[$row[0]][0]++;
 			} else {
 				$recs[$row[0]] = array(1,0,0);
 			}
-			if ($row = mysql_fetch_array($result)) {
+			if ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 				if (isset($recs[$row[0]])) {
 					$recs[$row[0]][1]++;
 				} else {
 					$recs[$row[0]] = array(0,1,0);
 				}
-				if ($row = mysql_fetch_array($result)) {
+				if ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 					if (isset($recs[$row[0]])) {
 						$recs[$row[0]][2]++;
 					} else {
@@ -634,7 +635,7 @@ function chat_topsums($aseco, $command) {
 				}
 			}
 		}
-		mysql_free_result($result);
+		$result = null;
 	}
 
 	if (empty($recs)) {
@@ -736,7 +737,7 @@ function chat_topsums($aseco, $command) {
 }  // chat_topsums
 
 function chat_toprecs($aseco, $command) {
-	global $maxrecs;
+	global $maxrecs, $dbo;
 
 	$player = $command['author'];
 
@@ -768,9 +769,9 @@ function chat_toprecs($aseco, $command) {
 
 	// get current list of track IDs
 	$query = 'SELECT Id,Uid FROM challenges';
-	$result = mysql_query($query);
+	$result = $dbo->query($query);
 	$tidlist = array();
-	while ($row = mysql_fetch_object($result)) {
+	while ($row = $result->fetch(PDO::FETCH_OBJ)) {
 		if (array_key_exists($row->Uid, $newlist))
 			$tidlist[] = $row->Id;
 	}
@@ -784,16 +785,16 @@ function chat_toprecs($aseco, $command) {
 		          WHERE players.id=records.playerid AND
 		                challengeid=' . $tid . '
 		          ORDER BY score ' . $order . ',date ASC LIMIT ' . $maxrecs;
-		$result = mysql_query($query);
+		$result = $dbo->query($query);
 
 		// update record totals by login
-		while ($row = mysql_fetch_array($result)) {
+		while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
 			if (isset($recs[$row[0]]))
 				$recs[$row[0]]++;
 			else
 				$recs[$row[0]] = 1;
 		}
-		mysql_free_result($result);
+		$result = null;
 	}
 
 	if (empty($recs)) {

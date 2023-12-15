@@ -15,24 +15,24 @@ Aseco::addChatCommand('plugins', 'Displays list of active plugins');
 Aseco::addChatCommand('nations', 'Displays top 10 most visiting nations');
 
 function chat_server($aseco, $command) {
-	global $maxrecs, $admin_contact, $feature_votes;  // from rasp.settings.php
+	global $maxrecs, $admin_contact, $feature_votes, $dbo;  // from rasp.settings.php
 
 	$player = $command['author'];
 	$login = $player->login;
 
 	// collect players/nations stats
 	$query = 'SELECT COUNT(Id), COUNT(DISTINCT Nation), SUM(TimePlayed) FROM players';
-	$res = mysql_query($query);
-	if (mysql_num_rows($res) > 0) {
-		$row = mysql_fetch_row($res);
+	$res = $dbo->query($query);
+	if ($res->rowCount() > 0) {
+		$row = $res->fetch(PDO::FETCH_NUM);
 		$players = $row[0];
 		$nations = $row[1];
 		$totaltime = $row[2];
-		mysql_free_result($res);
+		$res = null;
 		$playdays = floor($totaltime / (24 * 3600));
 		$playtime = $totaltime - ($playdays * 24 * 3600);
 	} else {
-		mysql_free_result($res);
+		$res = null;
 		trigger_error('No players/nations stats found!', E_USER_ERROR);
 	}
 
@@ -353,6 +353,7 @@ function chat_plugins($aseco, $command) {
 }  // chat_plugins
 
 function chat_nations($aseco, $command) {
+	global $dbo;
 
 	if ($aseco->server->getGame() == 'TMN')
 		$top = 10;
@@ -362,18 +363,18 @@ function chat_nations($aseco, $command) {
 		$top = 4;
 
 	$query = 'SELECT Nation, COUNT(Nation) AS count FROM players GROUP BY Nation ORDER BY count DESC LIMIT ' . $top;
-	$res = mysql_query($query);
+	$res = $dbo->query($query);
 
 	// collect and sort nations
-	if (mysql_num_rows($res) > 0) {
+	if ($res->rowCount() > 0) {
 		$nations = array();
-		while ($row = mysql_fetch_row($res)) {
+		while ($row = $res->fetch(PDO::FETCH_NUM)) {
 			$nations[$row[0]] = $row[1];
 		}
-		mysql_free_result($res);
+		$res = null;
 	} else {
 		trigger_error('No players/nations found!', E_USER_WARNING);
-		mysql_free_result($res);
+		$res = null;
 		return;
 	}
 	arsort($nations);

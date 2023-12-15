@@ -531,7 +531,7 @@ function chat_dedilast($aseco, $command) {
 }  // chat_dedilast
 
 function chat_dedinext($aseco, $command) {
-	global $dedi_db;
+	global $dedi_db, $dbo;
 
 	$login = $command['author']->login;
 	$dedi_recs = $dedi_db['Challenge']['Records'];
@@ -590,12 +590,12 @@ function chat_dedinext($aseco, $command) {
 			          WHERE playerID=' . $command['author']->id . ' AND
 			                challengeID=' . $aseco->server->challenge->id . '
 			          ORDER BY score ' . $order . ' LIMIT 1';
-			$result = mysql_query($query);
-			if (mysql_num_rows($result) > 0) {
-				$unranked = mysql_fetch_object($result);
+			$result = $dbo->query($query);
+			if ($result->rowCount() > 0) {
+				$unranked = $result->fetch(PDO::FETCH_OBJ);
 				$found = true;
 			}
-			mysql_free_result($result);
+			$result = null;
 
 			if ($found) {
 				// get the last Dedimania record

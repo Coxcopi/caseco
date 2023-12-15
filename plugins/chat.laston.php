@@ -12,6 +12,7 @@
 Aseco::addChatCommand('laston', 'Shows when a player was last online');
 
 function chat_laston($aseco, $command) {
+	global $dbo;
 
 	$player = $command['author'];
 	$target = $player;
@@ -24,9 +25,9 @@ function chat_laston($aseco, $command) {
 	// obtain last online timestamp
 	$query = 'SELECT UpdatedAt FROM players
 	          WHERE login=' . quotedString($target->login);
-	$result = mysql_query($query);
-	$laston = mysql_fetch_row($result);
-	mysql_free_result($result);
+	$result = $dbo->query($query);
+	$laston = $result->fetch(PDO::FETCH_NUM);
+	$result = null;
 
 	// show chat message (strip seconds off timestamp)
 	$message = '{#server}> Player {#highlite}' . $target->nickname .

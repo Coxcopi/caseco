@@ -164,6 +164,7 @@ $rounds_finishpanel = true;
 
 function chat_admin($aseco, $command) {
 	global $jukebox;  // from plugin.rasp_jukebox.php
+	global $dbo;
 
 	$admin = $command['author'];
 	$login = $admin->login;
@@ -1630,11 +1631,11 @@ function chat_admin($aseco, $command) {
 			          WHERE login LIKE ' . quotedString('%' . $arglist[1] . '%') .
 			           ' OR nickname LIKE ' . quotedString('%' . $arglist[1] . '%') .
 			         ' LIMIT 5000';  // prevent possible memory overrun
-			$result = mysql_query($query);
+			$result = $dbo->query($query);
 
 			$playerlist = array();
-			if (mysql_num_rows($result) > 0) {
-				while ($row = mysql_fetch_row($result)) {
+			if ($result->rowCount() > 0) {
+				while ($row = $result->fetch(PDO::FETCH_NUM)) {
 					// skip any LAN logins
 					if (!isLANLogin($row[0]))
 						$playerlist[$row[0]] = array('login' => $row[0],
@@ -1642,7 +1643,7 @@ function chat_admin($aseco, $command) {
 						                             'spec' => false);
 				}
 			}
-			mysql_free_result($result);
+			$result = null;
 		}
 
 		if (!empty($playerlist)) {
@@ -3771,7 +3772,7 @@ function chat_admin($aseco, $command) {
 	 * Prune records/rs_times database entries for specific track.
 	 */
 	} elseif ($command['params'][0] == 'prunerecs' && $command['params'][1] != '') {
-		global $rasp;  // from plugin.rasp.php
+		global $rasp, $dbo;  // from plugin.rasp.php
 
 		// verify parameter
 		$param = $command['params'][1];
@@ -3792,9 +3793,9 @@ function chat_admin($aseco, $command) {
 				if ($track > 0) {
 					// delete the records and rs_times
 					$query = 'DELETE FROM records WHERE ChallengeID=' . $track;
-					mysql_query($query);
+					$dbo->query($query);
 					$query = 'DELETE FROM rs_times WHERE challengeID=' . $track;
-					mysql_query($query);
+					$dbo->query($query);
 
 					// log console message
 					$aseco->console('{1} [{2}] pruned records/times for track {3} !', $logtitle, $login, stripColors($name, false));
