@@ -42,7 +42,7 @@ class Checkpoints {
 	var $speccers;
 
 	// init empty checkpoints
-	function Checkpoints() {
+	function __construct() {
 		$this->loclrec = -1;  // -1 = off, 0 = own/last rec, 1-max = rec #1-max
 		$this->dedirec = -1;  // -1 = off, 0 = own/last rec, 1-30 = rec #1-30
 		$this->best_time = 0;

@@ -38,7 +38,7 @@ class Music {
 	var $jukebox;
 	var $messages;
 
-	function Music($settings) {
+	function __construct($settings) {
 
 		if (isset($settings['OVERRIDE_TRACK'][0]))
 			$this->override = (strtolower($settings['OVERRIDE_TRACK'][0]) == 'true');
