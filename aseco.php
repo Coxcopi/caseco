@@ -2358,6 +2358,7 @@ disabled */
 	 * Finds a player ID from its login.
 	 */
 	function getPlayerId($login, $forcequery = false) {
+		global $dbo;
 
 		if (isset($this->server->players->player_list[$login]) &&
 		    $this->server->players->player_list[$login]->id > 0 && !$forcequery) {
@@ -2365,14 +2366,14 @@ disabled */
 		} else {
 			$query = 'SELECT id FROM players
 			          WHERE login=' . quotedString($login);
-			$result = mysql_query($query);
-			if (mysql_num_rows($result) > 0) {
-				$row = mysql_fetch_row($result);
+			$result = $dbo->query($query);
+			if ($result->rowCount($result) > 0) {
+				$row = $result->fetch(PDO::FETCH_NUM);
 				$rtn = $row[0];
 			} else {
 				$rtn = 0;
 			}
-			mysql_free_result($result);
+			$result = null;
 		}
 		return $rtn;
 	}  // getPlayerId
@@ -2381,6 +2382,7 @@ disabled */
 	 * Finds a player Nickname from its login.
 	 */
 	function getPlayerNick($login, $forcequery = false) {
+		global $pdo;
 
 		if (isset($this->server->players->player_list[$login]) &&
 		    $this->server->players->player_list[$login]->nickname != '' && !$forcequery) {
@@ -2388,14 +2390,14 @@ disabled */
 		} else {
 			$query = 'SELECT nickname FROM players
 			          WHERE login=' . quotedString($login);
-			$result = mysql_query($query);
-			if (mysql_num_rows($result) > 0) {
-				$row = mysql_fetch_row($result);
+			$result = $pdo->query($query);
+			if ($result->rowCount($result) > 0) {
+				$row = $result->fetch(PDO::FETCH_NUM);
 				$rtn = $row[0];
 			} else {
 				$rtn = '';
 			}
-			mysql_free_result($result);
+			$result = null;
 		}
 		return $rtn;
 	}  // getPlayerNick
@@ -2441,9 +2443,9 @@ disabled */
 			// check offline players database
 			$query = 'SELECT * FROM players
 			          WHERE login=' . quotedString($param);
-			$result = mysql_query($query);
-			if (mysql_num_rows($result) > 0) {
-				$row = mysql_fetch_object($result);
+			$result = $dbo->query($query);
+			if ($result->rowCount($result) > 0) {
+				$row = $result->fetch(PDO::FETCH_OBJ);
 				// create dummy player object
 				$target = new Player();
 				$target->id = $row->Id;
@@ -2454,7 +2456,7 @@ disabled */
 				$target->wins = $row->Wins;
 				$target->timeplayed = $row->TimePlayed;
 			}
-			mysql_free_result($result);
+			$result = null;
 		}
 
 		// found anyone anywhere?
@@ -2470,17 +2472,18 @@ disabled */
 	 * Finds a challenge ID from its UID.
 	 */
 	function getChallengeId($uid) {
+		global $dbo;
 
 		$query = 'SELECT Id FROM challenges
 		          WHERE Uid=' . quotedString($uid);
-		$res = mysql_query($query);
-		if (mysql_num_rows($res) > 0) {
-			$row = mysql_fetch_row($res);
+		$res = $dbo->query($query);
+		if ($res->rowCount() > 0) {
+			$row = $res->fetch(PDO::FETCH_NUM);
 			$rtn = $row[0];
 		} else {
 			$rtn = 0;
 		}
-		mysql_free_result($res);
+		$res = null;
 		return $rtn;
 	}  // getChallengeId
 
