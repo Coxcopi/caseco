@@ -262,8 +262,7 @@ function ldb_connect($aseco) {
 
 // called @ onEverySecond
 function ldb_reconnect($aseco) {
-	global $dlb_settings;
-	global $dbo;
+	global $dlb_settings, $dbo;
 
 	// check for online players
 	if (empty($aseco->server->players->player_list)) {
@@ -295,7 +294,7 @@ disabled */
 
 // called @ onPlayerConnect
 function ldb_playerConnect($aseco, $player) {
-	global $ldb_settings;
+	global $ldb_settings, $dbo;
 
 	if ($aseco->server->getGame() == 'TMF')
 		$nation = mapCountry($player->nation);
@@ -424,6 +423,7 @@ function ldb_playerConnect($aseco, $player) {
 
 // called @ onPlayerDisconnect
 function ldb_playerDisconnect($aseco, $player) {
+	global $dbo;
 
 	// ignore fluke disconnects with empty logins
 	if ($player->login == '') return;
@@ -442,6 +442,7 @@ function ldb_playerDisconnect($aseco, $player) {
 }  // ldb_playerDisconnect
 
 function ldb_getDonations($aseco, $login) {
+	global $dbo;
 
 	// get player's donations
 	$query = 'SELECT donations FROM players_extra
@@ -462,6 +463,7 @@ function ldb_getDonations($aseco, $login) {
 }  // ldb_getDonations
 
 function ldb_updateDonations($aseco, $login, $donation) {
+	global $dbo;
 
 	// update player's donations
 	$query = 'UPDATE players_extra
@@ -475,6 +477,7 @@ function ldb_updateDonations($aseco, $login, $donation) {
 }  // ldb_updateDonations
 
 function ldb_getCPs($aseco, $login) {
+	global $dbo;
 
 	// get player's CPs settings
 	$query = 'SELECT cps, dedicps FROM players_extra
@@ -495,6 +498,7 @@ function ldb_getCPs($aseco, $login) {
 }  // ldb_getCPs
 
 function ldb_setCPs($aseco, $login, $cps, $dedicps) {
+	global $dbo;
 
 	$query = 'UPDATE players_extra
 	          SET cps=' . $cps . ', dedicps=' . $dedicps . '
@@ -507,6 +511,7 @@ function ldb_setCPs($aseco, $login, $cps, $dedicps) {
 }  // ldb_setCPs
 
 function ldb_getStyle($aseco, $login) {
+	global $dbo;
 
 	// get player's style
 	$query = 'SELECT style FROM players_extra
@@ -527,6 +532,7 @@ function ldb_getStyle($aseco, $login) {
 }  // ldb_getStyle
 
 function ldb_setStyle($aseco, $login, $style) {
+	global $dbo;
 
 	$query = 'UPDATE players_extra
 	          SET style=' . quotedString($style) . '
@@ -539,6 +545,7 @@ function ldb_setStyle($aseco, $login, $style) {
 }  // ldb_setStyle
 
 function ldb_getPanels($aseco, $login) {
+	global $dbo;
 
 	// get player's panels
 	$query = 'SELECT panels FROM players_extra
@@ -565,6 +572,7 @@ function ldb_getPanels($aseco, $login) {
 }  // ldb_getPanels
 
 function ldb_setPanel($aseco, $login, $type, $panel) {
+	global $dbo;
 
 	// update player's panels
 	$panels = ldb_getPanels($aseco, $login);
@@ -785,7 +793,7 @@ function ldb_playerFinish($aseco, $finish_item) {
 }  // ldb_playerFinish
 
 function ldb_insert_record($record) {
-	global $aseco, $ldb_challenge;
+	global $aseco, $ldb_challenge, $dbo;
 
 	$playerid = $record->player->id;
 	$cps = implode(',', $record->checks);
@@ -806,7 +814,7 @@ function ldb_insert_record($record) {
 }  // ldb_insert_record
 
 function ldb_removeRecord($aseco, $cid, $pid, $recno) {
-	global $ldb_records;
+	global $ldb_records, $dbo;
 
 	// remove record
 	$query = 'DELETE FROM records WHERE ChallengeId=' . $cid . ' AND PlayerId=' . $pid;
@@ -888,9 +896,7 @@ function ldb_removeRecord($aseco, $cid, $pid, $recno) {
 
 // called @ onNewChallenge
 function ldb_newChallenge($aseco, $challenge) {
-	global $ldb_challenge, $ldb_records, $ldb_settings;
-	global $dbo;
-
+	global $ldb_challenge, $ldb_records, $ldb_settings, $dbo;
 	$ldb_records->clear();
 	$aseco->server->records->clear();
 
@@ -922,7 +928,7 @@ function ldb_newChallenge($aseco, $challenge) {
 	if ($result->rowCount() > 0) {
 
 		// get each record
-		while ($record = $result2->fetch(PDO::FETCH_ASSOC)) {
+		while ($record = $result->fetch(PDO::FETCH_ASSOC)) {
 
 			// create record object
 			$record_item = new Record();
@@ -996,6 +1002,7 @@ function ldb_newChallenge($aseco, $challenge) {
 
 // called @ onPlayerWins
 function ldb_playerWins($aseco, $player) {
+	global $dbo;
 
 	$wins = $player->getWins();
 	$query = 'UPDATE players
