@@ -2367,7 +2367,7 @@ disabled */
 			$query = 'SELECT id FROM players
 			          WHERE login=' . quotedString($login);
 			$result = $dbo->query($query);
-			if ($result->rowCount($result) > 0) {
+			if ($result->rowCount() > 0) {
 				$row = $result->fetch(PDO::FETCH_NUM);
 				$rtn = $row[0];
 			} else {
@@ -2391,7 +2391,7 @@ disabled */
 			$query = 'SELECT nickname FROM players
 			          WHERE login=' . quotedString($login);
 			$result = $pdo->query($query);
-			if ($result->rowCount($result) > 0) {
+			if ($result->rowCount() > 0) {
 				$row = $result->fetch(PDO::FETCH_NUM);
 				$rtn = $row[0];
 			} else {
@@ -2444,7 +2444,7 @@ disabled */
 			$query = 'SELECT * FROM players
 			          WHERE login=' . quotedString($param);
 			$result = $dbo->query($query);
-			if ($result->rowCount($result) > 0) {
+			if ($result->rowCount() > 0) {
 				$row = $result->fetch(PDO::FETCH_OBJ);
 				// create dummy player object
 				$target = new Player();
