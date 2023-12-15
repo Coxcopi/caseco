@@ -174,8 +174,7 @@ class Rasp {
 	}  // checkTables
 
 	function cleanData () {
-		global $prune_records_times;
-		global $dbo;
+		global $prune_records_times, $dbo;
 
 		$this->aseco->console('[RASP] Cleaning up unused data');
 		$sql = "DELETE FROM challenges WHERE uid=''";
@@ -236,6 +235,7 @@ class Rasp {
 	}  // cleanData
 
 	function getChallenges() {
+		global $dbo;
 
 		// get new/cached list of tracks
 		$newlist = getChallengesCache($this->aseco);  // from rasp.funcs.php
@@ -301,7 +301,7 @@ class Rasp {
 	}  // onSync
 
 	function resetRanks() {
-		global $maxrecs, $minrank;
+		global $maxrecs, $minrank, $dbo;
 
 		$players = array();
 		$this->aseco->console('[RASP] Calculating ranks...');
@@ -378,8 +378,7 @@ class Rasp {
 	}  // onPlayerjoin
 
 	function showPb($player, $track, $always_show) {
-		global $maxrecs, $maxavg;
-		global $pdo;
+		global $maxrecs, $maxavg, $dbo;
 
 		$found = false;
 		// find ranked record
@@ -455,7 +454,7 @@ class Rasp {
 	}  // showPb
 
 	function getPb($login, $track) {
-		global $maxrecs;
+		global $maxrecs, $dbo;
 
 		$found = false;
 		// find ranked record
@@ -495,8 +494,7 @@ class Rasp {
 	}  // getPb
 
 	function showRank($login) {
-		global $minrank;
-		global $dbo;
+		global $minrank, $dbo;
 
 		$pid = $this->aseco->getPlayerId($login);
 		$query = 'SELECT avg FROM rs_rank
@@ -526,6 +524,7 @@ class Rasp {
 	}  // showRank
 
 	function getRank($login) {
+		global $dbo;
 
 		$pid = $this->aseco->getPlayerId($login);
 		$query = 'SELECT avg FROM rs_rank
@@ -586,6 +585,7 @@ class Rasp {
 	}  // onNewtrack
 
 	function insertTime($time, $cps) {
+		global $dbo;
 
 		$pid = $time->player->id;
 		if ($pid != 0) {
@@ -602,6 +602,7 @@ class Rasp {
 	}  // insertTime
 
 	function deleteTime($cid, $pid) {
+		global $dbo;
 
 		$query = 'DELETE FROM rs_times WHERE challengeID=' . $cid . ' AND playerID=' . $pid;
 		$result = $dbo->query($query);
@@ -664,6 +665,7 @@ function chat_rank($aseco, $command) {
 }  // chat_rank
 
 function chat_top10($aseco, $command) {
+	global $dbo;
 
 	$player = $command['author'];
 
@@ -741,6 +743,7 @@ function chat_top10($aseco, $command) {
 }  // chat_top10
 
 function chat_top100($aseco, $command) {
+	global $dbo;
 
 	$player = $command['author'];
 
@@ -835,6 +838,7 @@ function chat_top100($aseco, $command) {
 }  // chat_top100
 
 function chat_topwins($aseco, $command) {
+	global $dbo;
 
 	$player = $command['author'];
 
@@ -936,6 +940,7 @@ function chat_topwins($aseco, $command) {
 }  // chat_topwins
 
 function chat_active($aseco, $command) {
+	global $dbo;
 
 	$player = $command['author'];
 
@@ -1038,7 +1043,7 @@ function chat_active($aseco, $command) {
 
 // called @ onStartup
 function event_onstartup($aseco) {
-	global $rasp, $prune_records_times;
+	global $rasp, $prune_records_times, $dbo;
 
 	$rasp = new Rasp();
 	$rasp->start($aseco, 'rasp.xml');
