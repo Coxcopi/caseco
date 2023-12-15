@@ -248,7 +248,7 @@ class Rasp {
 				          VALUES (' . quotedString($row['UId']) . ', ' . quotedString($row['Name']) . ', '
 				                    . quotedString($row['Author']) . ', ' . quotedString($row['Environnement']) . ')';
 				$result = $dbo->query($query);
-				if ($result->rownCount() != 1) {
+				if ($result->rowCount() != 1) {
 					trigger_error('{RASP_ERROR} Could not insert challenge! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 				} else {
 					$tid = $dbo->lastInsertId();
@@ -593,7 +593,7 @@ class Rasp {
 			          VALUES (' . $pid . ', ' . $time->challenge->id . ', ' . $time->score . ', '
 			                    . quotedString(time()) . ', ' . quotedString($cps) . ')';
 			$result = $dbo->query($query);
-			if ($result->rownCount() != 1) {
+			if ($result->rowCount() != 1) {
 				trigger_error('{RASP_ERROR} Could not insert time! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 			}
 		} else {
@@ -606,7 +606,7 @@ class Rasp {
 
 		$query = 'DELETE FROM rs_times WHERE challengeID=' . $cid . ' AND playerID=' . $pid;
 		$result = $dbo->query($query);
-		if ($result->rownCount() <= 0) {
+		if ($result->rowCount() <= 0) {
 			trigger_error('{RASP_ERROR} Could not remove time(s)! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		}
 	}  // deleteTime
