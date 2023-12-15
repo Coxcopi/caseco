@@ -1482,7 +1482,7 @@ function init_jbhistory($aseco, $data) {
 }  // init_jbhistory
 
 function chat_history($aseco, $command) {
-	global $rasp, $jb_buffer;
+	global $rasp, $jb_buffer, $dbo;
 
 	$player = $command['author'];
 
@@ -1500,9 +1500,9 @@ function chat_history($aseco, $command) {
 			// get track name from UID
 			$query = 'SELECT Name FROM challenges
 			          WHERE Uid=' . quotedString($jb_buffer[$j]);
-			$res = mysql_query($query);
-			$row = mysql_fetch_object($res);
-			mysql_free_result($res);
+			$res = $dbo->query($query);
+			$row = $res->fetch(PDO::FETCH_OBJ);
+			$res = null;
 
 			$message .= '{#highlite}' . $i . '{#emotic}.[{#highlite}' . stripColors($row->Name) . '{#emotic}], ';
 		}

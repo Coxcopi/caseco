@@ -97,7 +97,7 @@ function init_statspanel($aseco) {
 
 // called @ onEndRace
 function update_allstatspanels($aseco, $data) {
-	global $rasp;
+	global $rasp, $dbo;
 
 	if ($aseco->server->getGame() == 'TMF' && $aseco->settings['sb_stats_panels']) {
 		// get list of online players
@@ -109,15 +109,15 @@ function update_allstatspanels($aseco, $data) {
 		$query = 'SELECT p.Login, COUNT(p.Id) AS Count FROM players p, records r
 		          WHERE p.Id=r.PlayerId AND p.Id IN (' . implode(',', $onlinelist) . ')
 		          GROUP BY p.Id';
-		$result = mysql_query($query);
+		$result = $dbo->query($query);
 
 		// build quick lookup list
 		$recslist = array();
-		if (mysql_num_rows($result) > 0) {
-			while ($row = mysql_fetch_object($result))
+		if ($result->rowCount() > 0) {
+			while ($row = $result->fetch(PDO::FETCH_OBJ))
 				$recslist[$row->Login] = $row->Count;
 		}
-		mysql_free_result($result);
+		$result = null;
 
 		// display stats panels for all these players
 		foreach ($aseco->server->players->player_list as $pl) {

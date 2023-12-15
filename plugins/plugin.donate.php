@@ -197,6 +197,7 @@ function bill_updated($aseco, $bill) {
 
 
 function chat_topdons($aseco, $command) {
+	global $dbo;
 
 	$player = $command['author'];
 	$login = $player->login;
@@ -211,9 +212,9 @@ function chat_topdons($aseco, $command) {
 			$query = 'SELECT p.NickName, x.donations FROM players p
 			          LEFT JOIN players_extra x ON (p.Id=x.PlayerId)
 			          WHERE x.donations!=0 ORDER BY x.donations DESC LIMIT ' . $top;
-			$res = mysql_query($query);
+			$res = $dbo->query($query);
 
-			if (mysql_num_rows($res) > 0) {
+			if ($res->rowCount() > 0) {
 				$dons = array();
 				$lines = 0;
 				$player->msgs = array();
@@ -221,7 +222,7 @@ function chat_topdons($aseco, $command) {
 				$extra = ($aseco->settings['lists_colornicks'] ? 0.2 : 0);
 				$player->msgs[0] = array(1, $head, array(0.7+$extra, 0.1, 0.45+$extra, 0.15), array('Icons128x128_1', 'Coppers', -0.01));
 				$i = 1;
-				while ($row = mysql_fetch_object($res)) {
+				while ($row = $res->fetch(PDO::FETCH_OBJ)) {
 					$nick = $row->NickName;
 					if (!$aseco->settings['lists_colornicks'])
 						$nick = stripColors($nick);
@@ -245,7 +246,7 @@ function chat_topdons($aseco, $command) {
 				$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($message), $login);
 			}
 
-			mysql_free_result($res);
+			$res = null;
 		} else {
 			$message = formatText($aseco->getChatMessage('UNITED_ONLY'), 'server');
 			$aseco->client->query('ChatSendServerMessageToLogin', $aseco->formatColors($message), $login);
