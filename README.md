@@ -14,5 +14,6 @@ CAseco maintains the same set of plugins as the original.
 #### TODO
 - [X] Update constructor syntax
 - [X] Fix array string index access changes
-- [ ] Replace mysql_*() with PDOs
+- [X] Replace mysql_*() with PDOs
 - [ ] update uft8 encoding/decoding
+- [ ] (update MySQL defaults to comply with strict mode) (?)
