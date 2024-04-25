@@ -1,7 +1,7 @@
 # CAseco
 CAseco (**C**oxcopi's **Aseco**) is a fork of the widely-used Trackmania Server Control Software [XAseco](https://www.xaseco.org/) rewritten in modern PHP.
-Countless issues and security concerns aswell as compatability problems with PHP versions newer than 5.6 have led to the decission of starting this project.
-CAseco maintains the same set of plugins as the original.
+Countless issues and security concerns as well as compatability problems with PHP versions newer than 5.6 have led to the decission of starting this project.
+CAseco maintains the same set of plugins as the original, although some of them still need to be updated.
 
 #### Requirements
 - `php` 
