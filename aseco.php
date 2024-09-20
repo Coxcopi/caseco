@@ -106,7 +106,8 @@ function displayError($errno, $errstr, $errfile, $errline) {
 		$aseco->client->query('SendHideManialinkPage');
 
 		if (function_exists('xdebug_get_function_stack'))
-			doLog(print_r(xdebug_get_function_stack()), true);
+			$func = "xdebug_get_function_stack";
+			doLog(print_r($func()), true);
 		die();
 		break;
 	case E_USER_WARNING:
@@ -1898,7 +1899,7 @@ disabled */
 		$finish_item = new Record();
 		$finish_item->player = $player;
 		$finish_item->score = $finish[2];
-		$finish_item->date = strftime('%Y-%m-%d %H:%M:%S');
+		$finish_item->date = date("Y-m-d H:i:s");
 		$finish_item->new = false;
 		$finish_item->challenge = clone $this->server->challenge;
 		unset($finish_item->challenge->gbx);  // reduce memory usage
@@ -2409,6 +2410,7 @@ disabled */
 	 * Returns false if not found
 	 */
 	function getPlayerParam($player, $param, $offline = false) {
+		global $dbo;
 
 		// if numeric param, find Player_ID from /players list (hardlimited to 300)
 		if (is_numeric($param) && $param >= 0 && $param < 300) {
