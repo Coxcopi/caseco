@@ -5,7 +5,7 @@ CAseco maintains the same set of plugins as the original, although some of them 
 
 #### Requirements
 - `php` 
-- `mysql-server`
+- `mysql-server` / `mariadb-server`
 - `php-xml`
 - `php-mysql`
 - `php-mbstring`
