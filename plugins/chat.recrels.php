@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Chat plugin.
@@ -10,11 +11,11 @@
  */
 
 if (!INHIBIT_RECCMDS) {
-	Aseco::addChatCommand('firstrec', 'Shows first ranked record on current track');
-	Aseco::addChatCommand('lastrec', 'Shows last ranked record on current track');
-	Aseco::addChatCommand('nextrec', 'Shows next better ranked record to beat');
-	Aseco::addChatCommand('diffrec', 'Shows your difference to first ranked record');
-	Aseco::addChatCommand('recrange', 'Shows difference first to last ranked record');
+	$aseco->addChatCommand('firstrec', 'Shows first ranked record on current track');
+	$aseco->addChatCommand('lastrec', 'Shows last ranked record on current track');
+	$aseco->addChatCommand('nextrec', 'Shows next better ranked record to beat');
+	$aseco->addChatCommand('diffrec', 'Shows your difference to first ranked record');
+	$aseco->addChatCommand('recrange', 'Shows difference first to last ranked record');
 }
 
 function chat_firstrec($aseco, $command) {

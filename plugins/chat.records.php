@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Chat plugin.
@@ -9,7 +10,7 @@
  * Dependencies: none
  */
 
-Aseco::addChatCommand('recs', 'Displays all records on current track');
+$aseco->addChatCommand('recs', 'Displays all records on current track');
 
 function chat_recs($aseco, $command) {
 

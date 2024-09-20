@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Chat plugin.
@@ -11,9 +12,9 @@
 
 require_once('includes/tmndatafetcher.inc.php');  // provides access to TMN world stats
 
-Aseco::addChatCommand('stats', 'Displays statistics of current player');
-Aseco::addChatCommand('statsall', 'Displays world statistics of a player');
-Aseco::addChatCommand('settings', 'Displays your personal settings');
+$aseco->addChatCommand('stats', 'Displays statistics of current player');
+$aseco->addChatCommand('statsall', 'Displays world statistics of a player');
+$aseco->addChatCommand('settings', 'Displays your personal settings');
 
 // calls function get_recs() from chat.records2.php
 function chat_stats($aseco, $command) {

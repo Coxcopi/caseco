@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Votes plugin.
@@ -11,24 +12,24 @@
  *               used by plugin.rasp_jukebox.php
  */
 
-Aseco::registerEvent('onSync', 'init_votes');
-Aseco::registerEvent('onSync', 'reset_votes');
-Aseco::registerEvent('onEndRace1', 'reset_votes');  // use pre event before all other processing
-Aseco::registerEvent('onNewChallenge2', 'enable_votes');
-Aseco::registerEvent('onPlayerConnect', 'explain_votes');
-Aseco::registerEvent('onPlayerDisconnect', 'cancel_kick');
-Aseco::registerEvent('onEndRound', 'r_expire_votes');
-Aseco::registerEvent('onCheckpoint', 'ta_expire_votes');
+$aseco->registerEvent('onSync', 'init_votes');
+$aseco->registerEvent('onSync', 'reset_votes');
+$aseco->registerEvent('onEndRace1', 'reset_votes');  // use pre event before all other processing
+$aseco->registerEvent('onNewChallenge2', 'enable_votes');
+$aseco->registerEvent('onPlayerConnect', 'explain_votes');
+$aseco->registerEvent('onPlayerDisconnect', 'cancel_kick');
+$aseco->registerEvent('onEndRound', 'r_expire_votes');
+$aseco->registerEvent('onCheckpoint', 'ta_expire_votes');
 
-Aseco::addChatCommand('helpvote', 'Displays info about the chat-based votes');
-Aseco::addChatCommand('votehelp', 'Displays info about the chat-based votes');
-Aseco::addChatCommand('endround', 'Starts a vote to end current round');
-Aseco::addChatCommand('ladder', 'Starts a vote to restart track for ladder');
-Aseco::addChatCommand('replay', 'Starts a vote to replay this track');
-Aseco::addChatCommand('skip', 'Starts a vote to skip this track');
-Aseco::addChatCommand('ignore', 'Starts a vote to ignore a player');
-Aseco::addChatCommand('kick', 'Starts a vote to kick a player');
-Aseco::addChatCommand('cancel', 'Cancels your current vote');
+$aseco->addChatCommand('helpvote', 'Displays info about the chat-based votes');
+$aseco->addChatCommand('votehelp', 'Displays info about the chat-based votes');
+$aseco->addChatCommand('endround', 'Starts a vote to end current round');
+$aseco->addChatCommand('ladder', 'Starts a vote to restart track for ladder');
+$aseco->addChatCommand('replay', 'Starts a vote to replay this track');
+$aseco->addChatCommand('skip', 'Starts a vote to skip this track');
+$aseco->addChatCommand('ignore', 'Starts a vote to ignore a player');
+$aseco->addChatCommand('kick', 'Starts a vote to kick a player');
+$aseco->addChatCommand('cancel', 'Cancels your current vote');
 
 // called @ onSync
 function init_votes($aseco, $data) {

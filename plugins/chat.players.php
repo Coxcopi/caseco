@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Chat plugin.
@@ -9,10 +10,10 @@
  * Dependencies: none
  */
 
-Aseco::addChatCommand('players', 'Displays current list of nicks/logins');
+$aseco->addChatCommand('players', 'Displays current list of nicks/logins');
 
 // handles action id's "2001"-"2200" for /stats
-Aseco::registerEvent('onPlayerManialinkPageAnswer', 'event_players');
+$aseco->registerEvent('onPlayerManialinkPageAnswer', 'event_players');
 
 function chat_players($aseco, $command) {
 

@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Panels plugin (TMF).
@@ -11,26 +12,26 @@
  *               requires plugin.donate.php (if donate panels in use)
  */
 
-Aseco::registerEvent('onStartup', 'panels_default');
-Aseco::registerEvent('onSync', 'init_statspanel');
-Aseco::registerEvent('onEndRace', 'update_allstatspanels');
-Aseco::registerEvent('onNewChallenge2', 'update_allrecpanels');
-Aseco::registerEvent('onNewChallenge2', 'display_alldonpanels');
-Aseco::registerEvent('onPlayerConnect', 'init_playerpanels');
-Aseco::registerEvent('onPlayerConnect', 'load_admpanel');
-Aseco::registerEvent('onPlayerConnect', 'load_donpanel');
-Aseco::registerEvent('onPlayerConnect', 'load_recpanel');
-Aseco::registerEvent('onPlayerFinish', 'finish_recpanel');
+$aseco->registerEvent('onStartup', 'panels_default');
+$aseco->registerEvent('onSync', 'init_statspanel');
+$aseco->registerEvent('onEndRace', 'update_allstatspanels');
+$aseco->registerEvent('onNewChallenge2', 'update_allrecpanels');
+$aseco->registerEvent('onNewChallenge2', 'display_alldonpanels');
+$aseco->registerEvent('onPlayerConnect', 'init_playerpanels');
+$aseco->registerEvent('onPlayerConnect', 'load_admpanel');
+$aseco->registerEvent('onPlayerConnect', 'load_donpanel');
+$aseco->registerEvent('onPlayerConnect', 'load_recpanel');
+$aseco->registerEvent('onPlayerFinish', 'finish_recpanel');
 
 // handles action id's "-100"-"-49" for selecting from max. 50 record panel templates
 // handles action id's "-48"-"-7" for selecting from max. 40 admin panel templates
 // handles action id's "37"-"48" for selecting from max. 10 vote panel templates
 // handles action id's "7201"-"7222" for selecting from max. 20 donate panel templates
-Aseco::registerEvent('onPlayerManialinkPageAnswer', 'event_panels');
+$aseco->registerEvent('onPlayerManialinkPageAnswer', 'event_panels');
 
-Aseco::addChatCommand('donpanel', 'Selects donate panel (see: /donpanel help)');
-Aseco::addChatCommand('recpanel', 'Selects records panel (see: /recpanel help)');
-Aseco::addChatCommand('votepanel', 'Selects vote panel (see: /votepanel help)');
+$aseco->addChatCommand('donpanel', 'Selects donate panel (see: /donpanel help)');
+$aseco->addChatCommand('recpanel', 'Selects records panel (see: /recpanel help)');
+$aseco->addChatCommand('votepanel', 'Selects vote panel (see: /votepanel help)');
 
 // called @ onStartup
 function panels_default($aseco) {

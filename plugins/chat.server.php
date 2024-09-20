@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Chat plugin.
@@ -9,10 +10,10 @@
  * Dependencies: none
  */
 
-Aseco::addChatCommand('server', 'Displays info about this server');
-Aseco::addChatCommand('xaseco', 'Displays info about this XASECO');
-Aseco::addChatCommand('plugins', 'Displays list of active plugins');
-Aseco::addChatCommand('nations', 'Displays top 10 most visiting nations');
+$aseco->addChatCommand('server', 'Displays info about this server');
+$aseco->addChatCommand('xaseco', 'Displays info about this XASECO');
+$aseco->addChatCommand('plugins', 'Displays list of active plugins');
+$aseco->addChatCommand('nations', 'Displays top 10 most visiting nations');
 
 function chat_server($aseco, $command) {
 	global $maxrecs, $admin_contact, $feature_votes, $dbo;  // from rasp.settings.php

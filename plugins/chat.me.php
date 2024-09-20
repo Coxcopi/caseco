@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Chat plugin.
@@ -9,7 +10,7 @@
  * Dependencies: none
  */
 
-Aseco::addChatCommand('me', 'Can be used to express emotions');
+$aseco->addChatCommand('me', 'Can be used to express emotions');
 
 function chat_me($aseco, $command) {
 

@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Karma plugin.
@@ -9,13 +10,13 @@
  * Dependencies: used by plugin.rasp.php
  */
 
-Aseco::registerEvent('onChat', 'check4Karma');
-Aseco::registerEvent('onPlayerFinish', 'remind_onfinish');
-Aseco::registerEvent('onEndRace', 'remind_onendrace');
+$aseco->registerEvent('onChat', 'check4Karma');
+$aseco->registerEvent('onPlayerFinish', 'remind_onfinish');
+$aseco->registerEvent('onEndRace', 'remind_onendrace');
 
-Aseco::addChatCommand('karma', 'Shows karma for the current track {Track_ID}');
-Aseco::addChatCommand('++', 'Increases karma for the current track');
-Aseco::addChatCommand('--', 'Decreases karma for the current track');
+$aseco->addChatCommand('karma', 'Shows karma for the current track {Track_ID}');
+$aseco->addChatCommand('++', 'Increases karma for the current track');
+$aseco->addChatCommand('--', 'Decreases karma for the current track');
 
 // called @ onChat
 function check4Karma($aseco, $chat) {

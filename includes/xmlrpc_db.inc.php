@@ -87,7 +87,7 @@ class XmlrpcDB {
 	function clearRequests($get_requests = false) {
 
 		if ($get_requests) {
-			$return = array($_requests, $_callbacks);
+			$return = array($this->_requests, $this->_callbacks);
 			$this->_initRequest();
 			return $return;
 		}

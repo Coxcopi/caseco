@@ -347,7 +347,7 @@ class GBXBaseFetcher
 	 *        Size of header block (chunks list & chunks data)
 	 * @param array $chunks
 	 *        List of chunk IDs & names
-	 * @return List of chunk offsets & sizes
+	 * @return array of chunk offsets & sizes
 	 */
 	protected function getChunksList($headerSize, array $chunks)
 	{
@@ -479,11 +479,11 @@ class GBXChallMapFetcher extends GBXBaseFetcher
 	/**
 	 * Mirror (flip) an image across horizontal, vertical or both axis
 	 * Source: http://www.php.net/manual/en/function.imagecopy.php#85992
-	 * @param String $imgsrc
+	 * @param GdImage $imgsrc
 	 *        Source image data
 	 * @param Int $dir
 	 *        Flip direction from the constants above
-	 * @return Flipped image data if successful, otherwise source image data
+	 * @return GDImage image data if successful, otherwise source image data
 	 */
 	private function imageFlip($imgsrc, $dir)
 	{

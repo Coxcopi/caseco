@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Nextrank plugin.
@@ -9,7 +10,7 @@
  * Dependencies: none
  */
 
-Aseco::addChatCommand('nextrank', 'Shows the next better ranked player');
+$aseco->addChatCommand('nextrank', 'Shows the next better ranked player');
 
 function chat_nextrank($aseco, $command) {
 	global $rasp, $minrank, $feature_ranks, $nextrank_show_rp, $dbo;

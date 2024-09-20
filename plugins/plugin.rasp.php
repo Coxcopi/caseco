@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * RASP plugin.
@@ -9,21 +10,21 @@
  * Dependencies: requires plugin.rasp_karma.php
  */
 
-Aseco::registerEvent('onStartup', 'event_onstartup');
-Aseco::registerEvent('onSync', 'event_onsync');
-Aseco::registerEvent('onNewChallenge2', 'event_newtrack');  // use 2nd event for logical ordering of rank/karma messages
-Aseco::registerEvent('onEndRace', 'event_endrace');
-Aseco::registerEvent('onPlayerFinish', 'event_finish');
-Aseco::registerEvent('onPlayerConnect', 'event_playerjoin');
+$aseco->registerEvent('onStartup', 'event_onstartup');
+$aseco->registerEvent('onSync', 'event_onsync');
+$aseco->registerEvent('onNewChallenge2', 'event_newtrack');  // use 2nd event for logical ordering of rank/karma messages
+$aseco->registerEvent('onEndRace', 'event_endrace');
+$aseco->registerEvent('onPlayerFinish', 'event_finish');
+$aseco->registerEvent('onPlayerConnect', 'event_playerjoin');
 
 if (!INHIBIT_RECCMDS) {
-	Aseco::addChatCommand('pb', 'Shows your personal best on current track');
+	$aseco->addChatCommand('pb', 'Shows your personal best on current track');
 }
-Aseco::addChatCommand('rank', 'Shows your current server rank');
-Aseco::addChatCommand('top10', 'Displays top 10 best ranked players');
-Aseco::addChatCommand('top100', 'Displays top 100 best ranked players');
-Aseco::addChatCommand('topwins', 'Displays top 100 victorious players');
-Aseco::addChatCommand('active', 'Displays top 100 most active players');
+$aseco->addChatCommand('rank', 'Shows your current server rank');
+$aseco->addChatCommand('top10', 'Displays top 10 best ranked players');
+$aseco->addChatCommand('top100', 'Displays top 100 best ranked players');
+$aseco->addChatCommand('topwins', 'Displays top 100 victorious players');
+$aseco->addChatCommand('active', 'Displays top 100 most active players');
 
 class Rasp {
 	var $aseco;

@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 // ffMod v1.4
 // Original version by Sloth, via tm-forum.com
@@ -40,17 +41,17 @@ global $matchTeamNameColorsAllowed, $matchOthersCanScore, $matchTeamNameMaxLengt
 $MatchSettings = array();
 $teamForceTeams = array();
 
-Aseco::registerEvent('onStartup', 'match_startup');  // checks for existence of 2 tables & creates if they don't exist
-Aseco::registerEvent('onNewChallenge', 'match_newChallenge');
-Aseco::registerEvent('onEndRace', 'match_endrace');
-Aseco::registerEvent('onPlayerConnect', 'match_playerconnect');
-Aseco::registerEvent('onPlayerDisconnect', 'match_playerdisconnect');
+$aseco->registerEvent('onStartup', 'match_startup');  // checks for existence of 2 tables & creates if they don't exist
+$aseco->registerEvent('onNewChallenge', 'match_newChallenge');
+$aseco->registerEvent('onEndRace', 'match_endrace');
+$aseco->registerEvent('onPlayerConnect', 'match_playerconnect');
+$aseco->registerEvent('onPlayerDisconnect', 'match_playerdisconnect');
 
-Aseco::addChatCommand('teamname', 'Set your team name OR help for more options');
-Aseco::addChatCommand('team', 'Same as teamname');
-Aseco::addChatCommand('tc', 'Send a chat message to your team only.');
-Aseco::addChatCommand('standings', 'See current match standings');
-Aseco::addChatCommand('match', 'admin only match commands');
+$aseco->addChatCommand('teamname', 'Set your team name OR help for more options');
+$aseco->addChatCommand('team', 'Same as teamname');
+$aseco->addChatCommand('tc', 'Send a chat message to your team only.');
+$aseco->addChatCommand('standings', 'See current match standings');
+$aseco->addChatCommand('match', 'admin only match commands');
 
 addMatchChatCommand('start', 'start match');
 addMatchChatCommand('start x', 'start match for x rounds');

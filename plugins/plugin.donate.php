@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Donation plugin (TMUF).
@@ -14,9 +15,9 @@
  * the first /donate transaction.
  */
 
-Aseco::registerEvent('onBillUpdated', 'bill_updated');
-Aseco::addChatCommand('donate', 'Donates coppers to server');
-Aseco::addChatCommand('topdons', 'Displays top 100 highest donators');
+$aseco->registerEvent('onBillUpdated', 'bill_updated');
+$aseco->addChatCommand('donate', 'Donates coppers to server');
+$aseco->addChatCommand('topdons', 'Displays top 100 highest donators');
 
 global $bills, $payments;
 $bills = array();

@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Chat plugin.
@@ -9,8 +10,8 @@
  * Dependencies: none
  */
 
-Aseco::addChatCommand('help', 'Shows all available commands');
-Aseco::addChatCommand('helpall', 'Displays help for available commands');
+$aseco->addChatCommand('help', 'Shows all available commands');
+$aseco->addChatCommand('helpall', 'Displays help for available commands');
 
 function chat_help($aseco, $command) {
 

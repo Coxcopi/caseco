@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Rounds Points plugin.
@@ -9,9 +10,9 @@
  * Dependencies: used by chat.admin.php
  */
 
-Aseco::registerEvent('onSync', 'init_rpoints');
+$aseco->registerEvent('onSync', 'init_rpoints');
 
-Aseco::addChatCommand('rpoints', 'Shows current Rounds points system');
+$aseco->addChatCommand('rpoints', 'Shows current Rounds points system');
 
 global $rounds_points;
 $rounds_points = array();

@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Chat plugin.
@@ -20,7 +21,7 @@
 // handles action id's "-5401"-"-5600" for /jfreu unban in listbans
 // handles action id's "-5601"-"-5800" for /jfreu removevip in listvips
 // handles action id's "-5801"-"-6000" for /jfreu removevipteam in listvipteams
-Aseco::registerEvent('onPlayerManialinkPageAnswer', 'event_jfreu');
+$aseco->registerEvent('onPlayerManialinkPageAnswer', 'event_jfreu');
 
 function init_jfreu_admin_commands($aseco)
 {

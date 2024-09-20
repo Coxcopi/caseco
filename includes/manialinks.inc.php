@@ -104,13 +104,18 @@
  *"-7901"-"-8100": Player numbers for /admin unbanip, handled in chat.admin.php
  */
 
-Aseco::registerEvent('onPlayerManialinkPageAnswer', 'event_manialink');
-Aseco::registerEvent('onNewChallenge', 'scorepanel_off');
-Aseco::registerEvent('onNewChallenge', 'statspanels_off');
-Aseco::registerEvent('onEndRace', 'scorepanel_on');
-Aseco::registerEvent('onEndRace', 'allwindows_off');
-Aseco::registerEvent('onBeginRound', 'roundspanel_off');
-Aseco::registerEvent('onPlayerFinish', 'roundspanel_on');
+/**
+ * @param Aseco $aseco
+ */
+function register_manialink_events($aseco) {
+	$aseco->registerEvent('onPlayerManialinkPageAnswer', 'event_manialink');
+	$aseco->registerEvent('onNewChallenge', 'scorepanel_off');
+	$aseco->registerEvent('onNewChallenge', 'statspanels_off');
+	$aseco->registerEvent('onEndRace', 'scorepanel_on');
+	$aseco->registerEvent('onEndRace', 'allwindows_off');
+	$aseco->registerEvent('onBeginRound', 'roundspanel_off');
+	$aseco->registerEvent('onPlayerFinish', 'roundspanel_on');
+}
 
 // stores/inits <custom_ui> block fields & records panel
 global $ml_custom_ui, $ml_records;

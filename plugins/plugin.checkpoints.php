@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Checkpoints plugin.
@@ -12,20 +13,20 @@
  * Dependencies: used by plugin.dedimania.php & plugin.localdatabase.php
  */
 
-Aseco::registerEvent('onPlayerConnect', 'addplayer_cp');
-Aseco::registerEvent('onPlayerDisconnect', 'removeplayer_cp');
-Aseco::registerEvent('onNewChallenge', 'reset_checkp');
-Aseco::registerEvent('onBeginRound', 'clear_curr_cp');
-Aseco::registerEvent('onEndRace', 'disable_checkp');
-Aseco::registerEvent('onRestartChallenge', 'restart_checkp');
-Aseco::registerEvent('onCheckpoint', 'store_checkp');
-Aseco::registerEvent('onPlayerFinish1', 'store_finish');  // use pre event before local/Dedimania record processsing
-Aseco::registerEvent('onPlayerInfoChanged', 'spec_togglecp');
+$aseco->registerEvent('onPlayerConnect', 'addplayer_cp');
+$aseco->registerEvent('onPlayerDisconnect', 'removeplayer_cp');
+$aseco->registerEvent('onNewChallenge', 'reset_checkp');
+$aseco->registerEvent('onBeginRound', 'clear_curr_cp');
+$aseco->registerEvent('onEndRace', 'disable_checkp');
+$aseco->registerEvent('onRestartChallenge', 'restart_checkp');
+$aseco->registerEvent('onCheckpoint', 'store_checkp');
+$aseco->registerEvent('onPlayerFinish1', 'store_finish');  // use pre event before local/Dedimania record processsing
+$aseco->registerEvent('onPlayerInfoChanged', 'spec_togglecp');
 
-Aseco::addChatCommand('cps', 'Sets local record checkpoints tracking');
-Aseco::addChatCommand('cpsspec', 'Shows checkpoints of spectated player');
-Aseco::addChatCommand('cptms', 'Displays all local records\' checkpoint times');
-Aseco::addChatCommand('sectms', 'Displays all local records\' sector times');
+$aseco->addChatCommand('cps', 'Sets local record checkpoints tracking');
+$aseco->addChatCommand('cpsspec', 'Shows checkpoints of spectated player');
+$aseco->addChatCommand('cptms', 'Displays all local records\' checkpoint times');
+$aseco->addChatCommand('sectms', 'Displays all local records\' sector times');
 
 global $checkpoints, $checkpoint_tests;
 $checkpoints = array();

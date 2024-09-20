@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * ManiaLink example plugin (TMF).
@@ -7,9 +8,9 @@
  * Created by Xymph
  */
 
-Aseco::addChatCommand('howtofixed', 'Demonstrates a fixed content window');
-Aseco::addChatCommand('howtosingle', 'Demonstrates a single-page window');
-Aseco::addChatCommand('howtomulti', 'Demonstrates a multi-page window');
+$aseco->addChatCommand('howtofixed', 'Demonstrates a fixed content window');
+$aseco->addChatCommand('howtosingle', 'Demonstrates a single-page window');
+$aseco->addChatCommand('howtomulti', 'Demonstrates a multi-page window');
 
 /*
 The ManiaLink windows are provided by includes/manialinks.inc.php.

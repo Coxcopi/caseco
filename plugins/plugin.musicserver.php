@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Music Server plugin (TMF).
@@ -9,14 +10,14 @@
  * Dependencies: none
  */
 
-Aseco::registerEvent('onSync', 'music_loadsettings');
-Aseco::registerEvent('onShutdown', 'music_shutdown');
-Aseco::registerEvent('onEndRace', 'music_nextsong');
+$aseco->registerEvent('onSync', 'music_loadsettings');
+$aseco->registerEvent('onShutdown', 'music_shutdown');
+$aseco->registerEvent('onEndRace', 'music_nextsong');
 
 // handles action id's "-2101"-"-4000" for selecting from max. 1900 songs
-Aseco::registerEvent('onPlayerManialinkPageAnswer', 'event_music');
+$aseco->registerEvent('onPlayerManialinkPageAnswer', 'event_music');
 
-Aseco::addChatCommand('music', 'Handles server music (see: /music help)');
+$aseco->addChatCommand('music', 'Handles server music (see: /music help)');
 
 require_once('includes/ogg_comments.inc.php');  // provides .OGG comments
 

@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Chat plugin.
@@ -9,8 +10,8 @@
  * Dependencies: none
  */
 
-Aseco::addChatCommand('song', 'Shows filename of current track\'s song');
-Aseco::addChatCommand('mod', 'Shows (file)name of current track\'s mod');
+$aseco->addChatCommand('song', 'Shows filename of current track\'s song');
+$aseco->addChatCommand('mod', 'Shows (file)name of current track\'s mod');
 
 function chat_song($aseco, $command) {
 

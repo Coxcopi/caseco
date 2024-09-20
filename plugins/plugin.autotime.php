@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Auto TimeLimit plugin.
@@ -12,8 +13,8 @@
  * Dependencies: none (but must be after plugin.rasp_jukebox.php in plugins.xml)
  */
 
-Aseco::registerEvent('onSync', 'load_atlconfig');
-Aseco::registerEvent('onEndRace', 'autotimelimit');
+$aseco->registerEvent('onSync', 'load_atlconfig');
+$aseco->registerEvent('onEndRace', 'autotimelimit');
 
 global $atl_config, $atl_active, $atl_restart;
 

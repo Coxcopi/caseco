@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Jfreu's lite plugin.
@@ -12,12 +13,12 @@
  * Dependencies: none
  */
 
-Aseco::registerEvent('onStartup', 'init_jfreu');
-Aseco::registerEvent('onEndRace', 'info_message');
-Aseco::registerEvent('onPlayerConnect', 'player_connect');
-Aseco::registerEvent('onPlayerDisconnect', 'player_disconnect');
+$aseco->registerEvent('onStartup', 'init_jfreu');
+$aseco->registerEvent('onEndRace', 'info_message');
+$aseco->registerEvent('onPlayerConnect', 'player_connect');
+$aseco->registerEvent('onPlayerDisconnect', 'player_disconnect');
 
-Aseco::addChatCommand('message', 'Shows random informational message');
+$aseco->addChatCommand('message', 'Shows random informational message');
 
 class Jfreu
 {

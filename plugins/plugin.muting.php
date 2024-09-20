@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Muting plugin.
@@ -10,12 +11,12 @@
  * Dependencies: none
  */
 
-Aseco::registerEvent('onStartup', 'init_globalpat');
-Aseco::registerEvent('onChat', 'handle_muting');
-Aseco::addChatCommand('mute', 'Mute another player\'s chat messages');
-Aseco::addChatCommand('unmute', 'UnMute another player\'s chat messages');
-Aseco::addChatCommand('mutelist', 'Display list of muted players');
-Aseco::addChatCommand('refresh', 'Refresh chat window');
+$aseco->registerEvent('onStartup', 'init_globalpat');
+$aseco->registerEvent('onChat', 'handle_muting');
+$aseco->addChatCommand('mute', 'Mute another player\'s chat messages');
+$aseco->addChatCommand('unmute', 'UnMute another player\'s chat messages');
+$aseco->addChatCommand('mutelist', 'Display list of muted players');
+$aseco->addChatCommand('refresh', 'Refresh chat window');
 
 global $globalpat;  // pre-defined pattern for global messages
 global $muting_available;  // signal to chat.admin.php & plugin.rasp_chat.php

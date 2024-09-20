@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Style plugin (TMF).
@@ -9,13 +10,13 @@
  * Dependencies: none
  */
 
-Aseco::registerEvent('onStartup', 'style_default');
-Aseco::registerEvent('onPlayerConnect', 'init_playerstyle');
+$aseco->registerEvent('onStartup', 'style_default');
+$aseco->registerEvent('onPlayerConnect', 'init_playerstyle');
 
 // handles action id's "49"-"100" for selecting from max. 50 style templates
-Aseco::registerEvent('onPlayerManialinkPageAnswer', 'event_style');
+$aseco->registerEvent('onPlayerManialinkPageAnswer', 'event_style');
 
-Aseco::addChatCommand('style', 'Selects window style (see: /style help)');
+$aseco->addChatCommand('style', 'Selects window style (see: /style help)');
 
 // called @ onStartup
 function style_default($aseco) {

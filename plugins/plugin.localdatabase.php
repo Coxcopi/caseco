@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * This script saves record into a local database.
@@ -13,15 +14,15 @@
  * Dependencies: requires plugin.panels.php on TMF
  */
 
-Aseco::registerEvent('onStartup', 'ldb_loadSettings');
-Aseco::registerEvent('onStartup', 'ldb_connect');
-Aseco::registerEvent('onEverySecond', 'ldb_reconnect');
-Aseco::registerEvent('onSync', 'ldb_sync');
-Aseco::registerEvent('onNewChallenge', 'ldb_newChallenge');
-Aseco::registerEvent('onPlayerConnect', 'ldb_playerConnect');
-Aseco::registerEvent('onPlayerDisconnect', 'ldb_playerDisconnect');
-Aseco::registerEvent('onPlayerFinish', 'ldb_playerFinish');
-Aseco::registerEvent('onPlayerWins', 'ldb_playerWins');
+$aseco->registerEvent('onStartup', 'ldb_loadSettings');
+$aseco->registerEvent('onStartup', 'ldb_connect');
+$aseco->registerEvent('onEverySecond', 'ldb_reconnect');
+$aseco->registerEvent('onSync', 'ldb_sync');
+$aseco->registerEvent('onNewChallenge', 'ldb_newChallenge');
+$aseco->registerEvent('onPlayerConnect', 'ldb_playerConnect');
+$aseco->registerEvent('onPlayerDisconnect', 'ldb_playerDisconnect');
+$aseco->registerEvent('onPlayerFinish', 'ldb_playerFinish');
+$aseco->registerEvent('onPlayerWins', 'ldb_playerWins');
 
 // called @ onStartup
 function ldb_loadSettings($aseco) {

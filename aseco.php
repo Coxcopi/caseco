@@ -105,9 +105,10 @@ function displayError($errno, $errstr, $errfile, $errline) {
 		// clear all ManiaLinks
 		$aseco->client->query('SendHideManialinkPage');
 
-		if (function_exists('xdebug_get_function_stack'))
-			$func = "xdebug_get_function_stack";
-			doLog(print_r($func()), true);
+		if (function_exists('xdebug_get_function_stack')) {
+			$fnc = "xdebug_get_function_stack";
+			doLog(print_r($fnc()), true);
+		}
 		die();
 		break;
 	case E_USER_WARNING:
@@ -729,6 +730,8 @@ class Aseco {
 		$this->server->game = $response['version']['Name'];
 		$this->server->version = $response['version']['Version'];
 		$this->server->build = $response['version']['Build'];
+
+		register_manialink_events($this);
 
 		// throw 'starting up' event
 		$this->releaseEvent('onStartup', null);
@@ -2564,6 +2567,7 @@ if (shorthand2bytes($limit) < 128 * 1048576)
 setlocale(LC_NUMERIC, 'C');
 
 // create an instance of XASECO and run it
+global $aseco;
 $aseco = new Aseco(false);
 $aseco->run('config.xml');
 ?>

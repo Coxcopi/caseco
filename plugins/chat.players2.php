@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Chat plugin.
@@ -9,9 +10,9 @@
  * Dependencies: none
  */
 
-Aseco::addChatCommand('ranks', 'Displays list of online ranks/nicks');
-Aseco::addChatCommand('clans', 'Displays list of online clans/nicks');
-Aseco::addChatCommand('topclans', 'Displays top 10 best ranked clans');
+$aseco->addChatCommand('ranks', 'Displays list of online ranks/nicks');
+$aseco->addChatCommand('clans', 'Displays list of online clans/nicks');
+$aseco->addChatCommand('topclans', 'Displays top 10 best ranked clans');
 
 function chat_ranks($aseco, $command) {
 	global $rasp;

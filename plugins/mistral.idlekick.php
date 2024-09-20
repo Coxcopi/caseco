@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /****************************************************************************
  *
@@ -12,12 +13,12 @@
  *
  ****************************************************************************/
 
-Aseco::registerEvent('onNewChallenge', 'kickIdleNewChallenge');
-Aseco::registerEvent('onPlayerConnect', 'kickIdleInit');
-Aseco::registerEvent('onChat', 'kickIdleChat');
-Aseco::registerEvent('onCheckpoint', 'kickIdleCheckpoint');
-Aseco::registerEvent('onPlayerFinish', 'kickIdleFinish');
-Aseco::registerEvent('onEndRace', 'kickIdlePlayers');
+$aseco->registerEvent('onNewChallenge', 'kickIdleNewChallenge');
+$aseco->registerEvent('onPlayerConnect', 'kickIdleInit');
+$aseco->registerEvent('onChat', 'kickIdleChat');
+$aseco->registerEvent('onCheckpoint', 'kickIdleCheckpoint');
+$aseco->registerEvent('onPlayerFinish', 'kickIdleFinish');
+$aseco->registerEvent('onEndRace', 'kickIdlePlayers');
 
 global $kickPlayAfter, $kickSpecAfter, $kickSpecToo, $specPlayFirst, $resetOnChat,
        $resetOnCheckpoint, $resetOnFinish, $idlekickStart, $idlekick_log, $idlekick_debug;

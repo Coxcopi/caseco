@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Jukebox plugin.
@@ -18,9 +19,9 @@ require_once('includes/rasp.funcs.php');  // functions for the RASP plugins
 require_once('includes/tmxinfosearcher.inc.php');  // provides TMX searches
 
 // Register events and chat commands with aseco
-Aseco::registerEvent('onSync', 'init_jbhistory');
-Aseco::registerEvent('onEndRace', 'rasp_endrace');
-Aseco::registerEvent('onNewChallenge', 'rasp_newtrack');
+$aseco->registerEvent('onSync', 'init_jbhistory');
+$aseco->registerEvent('onEndRace', 'rasp_endrace');
+$aseco->registerEvent('onNewChallenge', 'rasp_newtrack');
 
 // handles action id's "101"-"2000" for jukeboxing max. 1900 tracks
 // handles action id's "-101"-"-2000" for listing max. 1900 authors
@@ -30,23 +31,23 @@ Aseco::registerEvent('onNewChallenge', 'rasp_newtrack');
 // handles action id's "5701"-"6200" for invoking /add on max. 500 tracks
 // handles action id's "6201"-"6700" for invoking /admin add on max. 500 tracks
 // handles action id's "6701"-"7200" for invoking /xlist auth: on max. 500 authors
-Aseco::registerEvent('onPlayerManialinkPageAnswer', 'event_jukebox');
+$aseco->registerEvent('onPlayerManialinkPageAnswer', 'event_jukebox');
 
-Aseco::addChatCommand('list', 'Lists tracks currently on the server (see: /list help)');
-Aseco::addChatCommand('jukebox', 'Sets track to be played next (see: /jukebox help)');
+$aseco->addChatCommand('list', 'Lists tracks currently on the server (see: /list help)');
+$aseco->addChatCommand('jukebox', 'Sets track to be played next (see: /jukebox help)');
 if (ABBREV_COMMANDS) {
-	Aseco::addChatCommand('jb', 'Sets a track to be played next (see: /jb help)');
+	$aseco->addChatCommand('jb', 'Sets a track to be played next (see: /jb help)');
 	function chat_jb($aseco, $command) { chat_jukebox($aseco, $command); }
 }
-Aseco::addChatCommand('autojuke', 'Jukeboxes track from /list (see: /autojuke help)');
+$aseco->addChatCommand('autojuke', 'Jukeboxes track from /list (see: /autojuke help)');
 if (ABBREV_COMMANDS) {
-	Aseco::addChatCommand('aj', 'Jukeboxes track from /list (see: /aj help)');
+	$aseco->addChatCommand('aj', 'Jukeboxes track from /list (see: /aj help)');
 	function chat_aj($aseco, $command) { chat_autojuke($aseco, $command); }
 }
-Aseco::addChatCommand('add', 'Adds a track directly from TMX (<ID> {sec})');
-Aseco::addChatCommand('y', 'Votes Yes for a TMX track or chat-based vote');
-Aseco::addChatCommand('history', 'Shows the 10 most recently played tracks');
-Aseco::addChatCommand('xlist', 'Lists tracks on TMX (see: /xlist help)');
+$aseco->addChatCommand('add', 'Adds a track directly from TMX (<ID> {sec})');
+$aseco->addChatCommand('y', 'Votes Yes for a TMX track or chat-based vote');
+$aseco->addChatCommand('history', 'Shows the 10 most recently played tracks');
+$aseco->addChatCommand('xlist', 'Lists tracks on TMX (see: /xlist help)');
 
 // called @ onEndRace
 function rasp_endrace($aseco, $data) {

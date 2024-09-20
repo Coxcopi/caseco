@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Uptodate plugin.
@@ -12,9 +13,9 @@
  * Dependencies: used by chat.admin.php
  */
 
-Aseco::registerEvent('onSync', 'start_uptodate');
-Aseco::registerEvent('onPlayerConnect', 'connect_uptodate');
-Aseco::addChatCommand('uptodate', 'Checks current version of XASECO', true);
+$aseco->registerEvent('onSync', 'start_uptodate');
+$aseco->registerEvent('onPlayerConnect', 'connect_uptodate');
+$aseco->addChatCommand('uptodate', 'Checks current version of XASECO', true);
 
 function up_to_date($aseco) {
 

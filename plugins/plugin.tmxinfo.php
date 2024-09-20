@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * TMX info plugin.
@@ -12,10 +13,10 @@
 
 require_once('includes/tmxinfofetcher.inc.php');  // provides access to TMX info
 
-Aseco::registerEvent('onNewChallenge2', 'tmx_worldrec');
+$aseco->registerEvent('onNewChallenge2', 'tmx_worldrec');
 
-Aseco::addChatCommand('tmxinfo', 'Displays TMX info {Track_ID/TMX_ID} {sec}');
-Aseco::addChatCommand('tmxrecs', 'Displays TMX records {Track_ID/TMX_ID} {sec}');
+$aseco->addChatCommand('tmxinfo', 'Displays TMX info {Track_ID/TMX_ID} {sec}');
+$aseco->addChatCommand('tmxrecs', 'Displays TMX records {Track_ID/TMX_ID} {sec}');
 
 global $tmxdata;  // cached TMX data
 

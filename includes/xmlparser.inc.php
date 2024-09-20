@@ -97,6 +97,8 @@ class Examsly {
 
 	private function parseArrayElements($array, $opt_tag = '') {
 
+		$xml = "";
+
 		// read each element of the array
 		for ($i = 0; $i < count($array); $i++) {
 

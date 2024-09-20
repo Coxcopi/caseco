@@ -82,23 +82,24 @@ class TMXInfoSearcher implements Iterator,Countable {
 	}  // __construct
 
 	// define standard Iterator functions
-	public function rewind() {
+	public function rewind(): void {
 		reset($this->tracks);
 	}
-	public function current() {
+	public function current(): mixed {
 		return new TMXInfo($this->section, $this->prefix, current($this->tracks));
 	}
-	public function next() {
-		return new TMXInfo($this->section, $this->prefix, next($this->tracks));
+	public function next(): void {
+		next($this->tracks);
+		//return new TMXInfo($this->section, $this->prefix, next($this->tracks));
 	}
-	public function key() {
+	public function key(): mixed {
 		return key($this->tracks);
 	}
-	public function valid() {
+	public function valid(): bool {
 		return (current($this->tracks) !== false);
 	}
 	// define standard Countable function
-	public function count() {
+	public function count(): int {
 		return count($this->tracks);
 	}
 

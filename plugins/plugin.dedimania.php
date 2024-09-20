@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Dedimania plugin.
@@ -50,13 +51,13 @@ $dedi_db_defaults = array(
 	'LimitRecs' => 10,
 );
 
-Aseco::registerEvent('onSync', 'dedimania_init');
-Aseco::registerEvent('onEverySecond', 'dedimania_update');
-Aseco::registerEvent('onPlayerConnect', 'dedimania_playerconnect');
-Aseco::registerEvent('onPlayerDisconnect', 'dedimania_playerdisconnect');
-Aseco::registerEvent('onNewChallenge', 'dedimania_newchallenge');
-Aseco::registerEvent('onEndRace', 'dedimania_endrace');
-Aseco::registerEvent('onPlayerFinish', 'dedimania_playerfinish');
+$aseco->registerEvent('onSync', 'dedimania_init');
+$aseco->registerEvent('onEverySecond', 'dedimania_update');
+$aseco->registerEvent('onPlayerConnect', 'dedimania_playerconnect');
+$aseco->registerEvent('onPlayerDisconnect', 'dedimania_playerdisconnect');
+$aseco->registerEvent('onNewChallenge', 'dedimania_newchallenge');
+$aseco->registerEvent('onEndRace', 'dedimania_endrace');
+$aseco->registerEvent('onPlayerFinish', 'dedimania_playerfinish');
 
 // Initialize Dedimania subsystem
 // called @ onSync

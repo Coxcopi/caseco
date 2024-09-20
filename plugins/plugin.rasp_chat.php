@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Chat plugin.
@@ -9,22 +10,22 @@
  * Dependencies: requires chat.admin.php
  */
 
-Aseco::addChatCommand('pm', 'Sends a private message to login or Player_ID');
-Aseco::addChatCommand('pma', 'Sends a private message to player & admins');
-Aseco::addChatCommand('pmlog', 'Displays log of your recent private messages');
-Aseco::addChatCommand('hi', 'Sends a Hi message to everyone');
-Aseco::addChatCommand('bye', 'Sends a Bye message to everyone');
-Aseco::addChatCommand('thx', 'Sends a Thanks message to everyone');
-Aseco::addChatCommand('lol', 'Sends a Lol message to everyone');
-Aseco::addChatCommand('lool', 'Sends a Lool message to everyone');
-Aseco::addChatCommand('brb', 'Sends a Be Right Back message to everyone');
-Aseco::addChatCommand('afk', 'Sends an Away From Keyboard message to everyone');
-Aseco::addChatCommand('gg', 'Sends a Good Game message to everyone');
-Aseco::addChatCommand('gr', 'Sends a Good Race message to everyone');
-Aseco::addChatCommand('n1', 'Sends a Nice One message to everyone');
-Aseco::addChatCommand('bgm', 'Sends a Bad Game message to everyone');
-Aseco::addChatCommand('official', 'Shows a helpful message ;-)');
-Aseco::addChatCommand('bootme', 'Boot yourself from the server');
+$aseco->addChatCommand('pm', 'Sends a private message to login or Player_ID');
+$aseco->addChatCommand('pma', 'Sends a private message to player & admins');
+$aseco->addChatCommand('pmlog', 'Displays log of your recent private messages');
+$aseco->addChatCommand('hi', 'Sends a Hi message to everyone');
+$aseco->addChatCommand('bye', 'Sends a Bye message to everyone');
+$aseco->addChatCommand('thx', 'Sends a Thanks message to everyone');
+$aseco->addChatCommand('lol', 'Sends a Lol message to everyone');
+$aseco->addChatCommand('lool', 'Sends a Lool message to everyone');
+$aseco->addChatCommand('brb', 'Sends a Be Right Back message to everyone');
+$aseco->addChatCommand('afk', 'Sends an Away From Keyboard message to everyone');
+$aseco->addChatCommand('gg', 'Sends a Good Game message to everyone');
+$aseco->addChatCommand('gr', 'Sends a Good Race message to everyone');
+$aseco->addChatCommand('n1', 'Sends a Nice One message to everyone');
+$aseco->addChatCommand('bgm', 'Sends a Bad Game message to everyone');
+$aseco->addChatCommand('official', 'Shows a helpful message ;-)');
+$aseco->addChatCommand('bootme', 'Boot yourself from the server');
 
 function chat_pm($aseco, $command) {
 	global $muting_available,  // from plugin.muting.php

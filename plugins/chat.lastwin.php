@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Chat plugin.
@@ -9,7 +10,7 @@
  * Dependencies: none
  */
 
-Aseco::addChatCommand('lastwin', 'Re-opens the last closed multi-page window');
+$aseco->addChatCommand('lastwin', 'Re-opens the last closed multi-page window');
 
 function chat_lastwin($aseco, $command) {
 

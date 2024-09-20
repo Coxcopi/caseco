@@ -224,7 +224,7 @@ class IXR_Message {
 	}
 
 	function tag_open($parser, $tag, $attr) {
-		$this->currentTag = $tag;
+		$this->_currentTag = $tag;
 		switch ($tag) {
 			case 'methodCall':
 			case 'methodResponse':
@@ -463,12 +463,12 @@ class IXR_Base64 {
 //////////////////////////////////////////////////////////
 class IXR_Client_Gbx {
 	public $socket;
-	public $message = false;
+	public $message = null;
 	public $cb_message = array();
 	public $reqhandle;
 	public $protocol = 0;
 	// Storage place for an error message
-	public $error = false;
+	public $error = null;
 
 	function bigEndianTest() {
 		list($endiantest) = array_values(unpack('L1L', pack('V', 1)));

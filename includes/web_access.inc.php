@@ -335,6 +335,7 @@ class WebaccessUrl {
 	var $_wait;
 	var $_response;
 	var $_query_num;
+	var $_query_time;
 	var $_request_time;
 	var $_cookies;
 	var $_webaccess_str;
@@ -749,7 +750,7 @@ class WebaccessUrl {
 				$time = microtime(true);
 				$this->_spool[0]['Times']['send'][1] = $time - $this->_spool[0]['Times']['send'][0];
 				//var_dump($this->_spool[0]['Datas']);
-				$this->_bad('Error(' . $errno . ') ' . $errstr . ', could not send data! ('
+				$this->_bad('Error(' . "" . ') ' . "" . ', could not send data! ('
 				            . $sent . ' / ' . ($this->_spool[0]['DatasSize'] - $this->_spool[0]['DatasSent']) . ', '
 				            . $this->_spool[0]['DatasSent'] . ' / ' . $this->_spool[0]['DatasSize'] . ')');
 				if ($this->_wait)
@@ -815,7 +816,7 @@ class WebaccessUrl {
 							$time = microtime(true);
 							$this->_spool[0]['Times']['receive'][1] = $time - $this->_spool[0]['Times']['receive'][0];
 						}
-						$this->_bad('Error(' . $errno . ') ' . $errstr . ', could not read all data!');
+						$this->_bad('Error(' . "" . ') ' . "" . ', could not read all data!');
 						return;
 					}
 				}

@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Chatlog plugin.
@@ -9,8 +10,8 @@
  * Dependencies: none
  */
 
-Aseco::registerEvent('onChat', 'log_chat');
-Aseco::addChatCommand('chatlog', 'Displays log of recent chat messages');
+$aseco->registerEvent('onChat', 'log_chat');
+$aseco->addChatCommand('chatlog', 'Displays log of recent chat messages');
 
 global $chatbuf;  // chat history buffer
 global $chatlen;  // length of chat history

@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Nextmap plugin.
@@ -9,7 +10,7 @@
  * Dependencies: none
  */
 
-Aseco::addChatCommand('nextmap', 'Shows name of the next challenge');
+$aseco->addChatCommand('nextmap', 'Shows name of the next challenge');
 
 function chat_nextmap($aseco, $command) {
 	global $rasp, $jukebox;

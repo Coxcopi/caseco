@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Chat plugin.
@@ -10,14 +11,14 @@
  */
 
 if (!INHIBIT_RECCMDS) {
-	Aseco::addChatCommand('newrecs', 'Shows newly driven records');
-	Aseco::addChatCommand('liverecs', 'Shows records of online players');
+	$aseco->addChatCommand('newrecs', 'Shows newly driven records');
+	$aseco->addChatCommand('liverecs', 'Shows records of online players');
 }
-Aseco::addChatCommand('best', 'Displays your best records');
-Aseco::addChatCommand('worst', 'Displays your worst records');
-Aseco::addChatCommand('summary', 'Shows summary of all your records');
-Aseco::addChatCommand('topsums', 'Displays top 100 of top-3 record holders');
-Aseco::addChatCommand('toprecs', 'Displays top 100 ranked records holders');
+$aseco->addChatCommand('best', 'Displays your best records');
+$aseco->addChatCommand('worst', 'Displays your worst records');
+$aseco->addChatCommand('summary', 'Shows summary of all your records');
+$aseco->addChatCommand('topsums', 'Displays top 100 of top-3 record holders');
+$aseco->addChatCommand('toprecs', 'Displays top 100 ranked records holders');
 
 /*
  * Universal function to generate list of records for current track.

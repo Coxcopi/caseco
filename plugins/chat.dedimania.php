@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Chat plugin.
@@ -11,23 +12,23 @@
  *               used by plugin.dedimania.php
  */
 
-Aseco::addChatCommand('helpdedi', 'Displays info about the Dedimania records system');
-Aseco::addChatCommand('dedihelp', 'Displays info about the Dedimania records system');
-Aseco::addChatCommand('dedirecs', 'Displays all Dedimania records on current track');
+$aseco->addChatCommand('helpdedi', 'Displays info about the Dedimania records system');
+$aseco->addChatCommand('dedihelp', 'Displays info about the Dedimania records system');
+$aseco->addChatCommand('dedirecs', 'Displays all Dedimania records on current track');
 if (!INHIBIT_RECCMDS) {
-	Aseco::addChatCommand('dedinew', 'Shows newly driven Dedimania records');
-	Aseco::addChatCommand('dedilive', 'Shows Dedimania records of online players');
-	Aseco::addChatCommand('dedipb', 'Shows your Dedimania personal best on current track');
-	Aseco::addChatCommand('dedifirst', 'Shows first Dedimania record on current track');
-	Aseco::addChatCommand('dedilast', 'Shows last Dedimania record on current track');
-	Aseco::addChatCommand('dedinext', 'Shows next better Dedimania record to beat');
-	Aseco::addChatCommand('dedidiff', 'Shows your difference to first Dedimania record');
-	Aseco::addChatCommand('dedirange', 'Shows difference first to last Dedimania record');
+	$aseco->addChatCommand('dedinew', 'Shows newly driven Dedimania records');
+	$aseco->addChatCommand('dedilive', 'Shows Dedimania records of online players');
+	$aseco->addChatCommand('dedipb', 'Shows your Dedimania personal best on current track');
+	$aseco->addChatCommand('dedifirst', 'Shows first Dedimania record on current track');
+	$aseco->addChatCommand('dedilast', 'Shows last Dedimania record on current track');
+	$aseco->addChatCommand('dedinext', 'Shows next better Dedimania record to beat');
+	$aseco->addChatCommand('dedidiff', 'Shows your difference to first Dedimania record');
+	$aseco->addChatCommand('dedirange', 'Shows difference first to last Dedimania record');
 }
-Aseco::addChatCommand('dedicps', 'Sets Dedimania record checkspoints tracking');
-Aseco::addChatCommand('dedistats', 'Displays Dedimania track statistics');
-Aseco::addChatCommand('dedicptms', 'Displays all Dedimania records\' checkpoint times');
-Aseco::addChatCommand('dedisectms', 'Displays all Dedimania records\' sector times');
+$aseco->addChatCommand('dedicps', 'Sets Dedimania record checkspoints tracking');
+$aseco->addChatCommand('dedistats', 'Displays Dedimania track statistics');
+$aseco->addChatCommand('dedicptms', 'Displays all Dedimania records\' checkpoint times');
+$aseco->addChatCommand('dedisectms', 'Displays all Dedimania records\' sector times');
 
 function chat_dedihelp($aseco, $command) { chat_helpdedi($aseco, $command); }
 function chat_helpdedi($aseco, $command) {

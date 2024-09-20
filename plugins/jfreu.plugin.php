@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Jfreu's plugin 0.14
@@ -23,12 +24,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-Aseco::registerEvent('onPlayerConnect', 'player_connect');
-Aseco::registerEvent('onPlayerDisconnect', 'player_disconnect');
-Aseco::registerEvent('onStartup', 'init_jfreu');
-Aseco::registerEvent('onEndRace', 'kick_hirank');
-Aseco::registerEvent('onEndRace', 'vote_end');
-Aseco::registerEvent('onEndRace', 'info_message');
+$aseco->registerEvent('onPlayerConnect', 'player_connect');
+$aseco->registerEvent('onPlayerDisconnect', 'player_disconnect');
+$aseco->registerEvent('onStartup', 'init_jfreu');
+$aseco->registerEvent('onEndRace', 'kick_hirank');
+$aseco->registerEvent('onEndRace', 'vote_end');
+$aseco->registerEvent('onEndRace', 'info_message');
 
 /**
  * Jfreu-Unspec-Fix by (OoR-F)~fuckfish
@@ -42,34 +43,34 @@ Aseco::registerEvent('onEndRace', 'info_message');
  * checkpoint was unspec-ed or still is in spec mode. If s/he is,
  * s/he will be kicked; easy but working =)
  */
-Aseco::registerEvent('onCheckpoint', 'kick_speconly');
+$aseco->registerEvent('onCheckpoint', 'kick_speconly');
 
 //** novote **//
-Aseco::registerEvent('onChat', 'novote');
-//Aseco::registerEvent('onPlayerVote', 'novote_message');
+$aseco->registerEvent('onChat', 'novote');
+//$aseco->registerEvent('onPlayerVote', 'novote_message');
 
 //** BadWords **//
-Aseco::registerEvent('onChat', 'BadWords');
+$aseco->registerEvent('onChat', 'BadWords');
 
 //** BAD BAD BAD **//
-Aseco::registerEvent('onPlayerFinish', 'pf_kick');
+$aseco->registerEvent('onPlayerFinish', 'pf_kick');
 
 //** MISC **/
-Aseco::addChatCommand('ranklimit', 'Shows the current rank limit');
-Aseco::addChatCommand('password', 'Show server\'s player/spectator password');
+$aseco->addChatCommand('ranklimit', 'Shows the current rank limit');
+$aseco->addChatCommand('password', 'Show server\'s player/spectator password');
 // disabled childish /fake command - Xymph
-//Aseco::addChatCommand('fake', 'blaguadeubal...');
+//$aseco->addChatCommand('fake', 'blaguadeubal...');
 // disabled /uptodate command, superseded in main system - Xymph
-//Aseco::addChatCommand('uptodate', 'Check version of Jfreu plugin');
+//$aseco->addChatCommand('uptodate', 'Check version of Jfreu plugin');
 
 //** VOTES **//
-Aseco::addChatCommand('unspec', 'Launches an unSpec vote');
-Aseco::addChatCommand('yes', 'Votes Yes for unSpec');
-Aseco::addChatCommand('no', 'Votes No for unSpec');
-Aseco::addChatCommand('message', 'Shows random informational message');
+$aseco->addChatCommand('unspec', 'Launches an unSpec vote');
+$aseco->addChatCommand('yes', 'Votes Yes for unSpec');
+$aseco->addChatCommand('no', 'Votes No for unSpec');
+$aseco->addChatCommand('message', 'Shows random informational message');
 
 //** Jfreu admin commands **//
-Aseco::addChatCommand('jfreu', 'Jfreu admin commands (see: /jfreu help)');
+$aseco->addChatCommand('jfreu', 'Jfreu admin commands (see: /jfreu help)');
 
 
 class Jfreu

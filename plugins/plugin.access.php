@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Access Control plugin.
@@ -11,8 +12,8 @@
  * Dependencies: none
  */
 
-Aseco::registerEvent('onStartup', 'access_initcontrol');
-Aseco::registerEvent('onPlayerConnect2', 'access_playerconnect');  // use post event after all join processing
+$aseco->registerEvent('onStartup', 'access_initcontrol');
+$aseco->registerEvent('onPlayerConnect2', 'access_playerconnect');  // use post event after all join processing
 
 global $access_control;
 	// ['order'] - boolean: allow,deny = true; deny,allow = false

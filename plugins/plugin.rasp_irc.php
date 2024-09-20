@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * IRC plugin.
@@ -8,8 +9,8 @@
  * Dependencies: none
  */
 
-Aseco::registerEvent('onSync', 'irc_onsync');
-Aseco::registerEvent('onMainLoop', 'irc_onloop');
+$aseco->registerEvent('onSync', 'irc_onsync');
+$aseco->registerEvent('onMainLoop', 'irc_onloop');
 
 // called @ onSync
 function irc_onsync($aseco, $null) {

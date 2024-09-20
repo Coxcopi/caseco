@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Msglog plugin.
@@ -9,11 +10,11 @@
  * Dependencies: none
  */
 
-Aseco::addChatCommand('msglog', 'Displays log of recent system messages');
+$aseco->addChatCommand('msglog', 'Displays log of recent system messages');
 
 // handles action id "7223" for /msglog button
-Aseco::registerEvent('onPlayerManialinkPageAnswer', 'event_msglog');
-Aseco::registerEvent('onPlayerConnect', 'msglog_button');
+$aseco->registerEvent('onPlayerManialinkPageAnswer', 'event_msglog');
+$aseco->registerEvent('onPlayerConnect', 'msglog_button');
 
 global $msgbuf;  // message history buffer
 global $msglen;  // length of message history

@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Rounds plugin.
@@ -10,11 +11,11 @@
  * Dependencies: none
  */
 
-Aseco::registerEvent('onSync', 'reset_rounds');
-Aseco::registerEvent('onNewChallenge', 'reset_rounds');
-Aseco::registerEvent('onRestartChallenge', 'reset_rounds');
-Aseco::registerEvent('onEndRound', 'report_round');
-Aseco::registerEvent('onPlayerFinish', 'store_time');
+$aseco->registerEvent('onSync', 'reset_rounds');
+$aseco->registerEvent('onNewChallenge', 'reset_rounds');
+$aseco->registerEvent('onRestartChallenge', 'reset_rounds');
+$aseco->registerEvent('onEndRound', 'report_round');
+$aseco->registerEvent('onPlayerFinish', 'store_time');
 
 global $rounds_count, $round_times, $round_pbs;
 

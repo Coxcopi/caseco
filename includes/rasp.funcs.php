@@ -8,13 +8,20 @@
 
 require_once('includes/gbxdatafetcher.inc.php');  // provides access to GBX data
 
-Aseco::registerEvent('onPlayerServerMessageAnswer', 'event_multi_message');
-Aseco::registerEvent('onChallengeListModified', 'clearChallengesCache');
-Aseco::registerEvent('onTracklistChanged', 'clearChallengesCache2');
-Aseco::registerEvent('onNewChallenge2', 'initChallengesCache');
+/**
+ * @param Aseco $aseco
+ */
+function register_rasp_events($aseco) {
+	$aseco->registerEvent('onPlayerServerMessageAnswer', 'event_multi_message');
+	$aseco->registerEvent('onChallengeListModified', 'clearChallengesCache');
+	$aseco->registerEvent('onTracklistChanged', 'clearChallengesCache2');
+	$aseco->registerEvent('onNewChallenge2', 'initChallengesCache');
+}
 
 global $challengeListCache;
 $challengeListCache = array();
+
+const envids = array('Stadium' => 11, 'Alpine' => 12, 'Bay' => 13, 'Coast' => 14, 'Island' => 15, 'Rally' => 16, 'Speed' => 17);
 
 // called @ onChallengeListModified & TMF
 function clearChallengesCache($aseco, $data) {
@@ -178,7 +185,7 @@ function getAllChallenges($player, $wildcard, $env) {
 			$player->msgs[] = $aseco->formatColors($head . $msg);
 
 	} elseif ($aseco->server->getGame() == 'TMF') {
-		$envids = array('Stadium' => 11, 'Alpine' => 12, 'Bay' => 13, 'Coast' => 14, 'Island' => 15, 'Rally' => 16, 'Speed' => 17);
+		
 		$head = 'Tracks On This Server:';
 		$msg = array();
 		if ($aseco->server->packmask != 'Stadium')
@@ -244,7 +251,7 @@ function getAllChallenges($player, $wildcard, $env) {
 				$trackenv = $row['Environnement'];
 				// add clickable button
 				if ($aseco->settings['clickable_lists'])
-					$trackenv = array($trackenv, $envids[$row['Environnement']]);  // action id
+					$trackenv = array($trackenv, envids[$row['Environnement']]);  // action id
 
 				// get corresponding record
 				$pos = isset($reclist[$row['UId']]) ? $reclist[$row['UId']] : 0;
@@ -275,7 +282,7 @@ function getAllChallenges($player, $wildcard, $env) {
 }  // getAllChallenges
 
 function getChallengesByKarma($player, $karmaval) {
-	global $aseco, $jb_buffer;
+	global $aseco, $jb_buffer, $dbo;
 
 	$player->tracklist = array();
 
@@ -296,9 +303,9 @@ function getChallengesByKarma($player, $karmaval) {
 		        HAVING karma ' . ($karmaval < 0 ? "<= $karmaval" : ">= $karmaval") . '
 		        ORDER BY karma ' . $order;
 	}
-	$result = mysql_query($sql);
-	if (mysql_num_rows($result) == 0) {
-		mysql_free_result($result);
+	$result = $dbo->query($sql);
+	if ($result->rowCount() == 0) {
+		$result = null;
 		return;
 	}
 
@@ -313,7 +320,7 @@ function getChallengesByKarma($player, $karmaval) {
 		$player->msgs = array();
 		$player->msgs[0] = 1;
 
-		while ($dbrow = mysql_fetch_array($result)) {
+		while ($dbrow = $result->fetch(PDO::FETCH_ASSOC)) {
 			// does the uid exist in the current server track list?
 			if (array_key_exists($dbrow[0], $newlist)) {
 				$row = $newlist[$dbrow[0]];
@@ -351,7 +358,7 @@ function getChallengesByKarma($player, $karmaval) {
 			$player->msgs[] = $aseco->formatColors($head . $msg);
 
 	} elseif ($aseco->server->getGame() == 'TMF') {
-		$envids = array('Stadium' => 11, 'Alpine' => 12, 'Bay' => 13, 'Coast' => 14, 'Island' => 15, 'Rally' => 16, 'Speed' => 17);
+		
 		$head = 'Tracks by Karma (' . $order . '):';
 		$msg = array();
 		if ($aseco->server->packmask != 'Stadium')
@@ -368,7 +375,7 @@ function getChallengesByKarma($player, $karmaval) {
 		else
 			$player->msgs[0] = array(1, $head, array(1.27+$extra, 0.12, 0.15, 0.6+$extra, 0.4), array('Icons128x128_1', 'NewTrack', 0.02));
 
-		while ($dbrow = mysql_fetch_array($result)) {
+		while ($dbrow = $result->fetch(PDO::FETCH_ASSOC)) {
 			// does the uid exist in the current server track list?
 			if (array_key_exists($dbrow[0], $newlist)) {
 				$row = $newlist[$dbrow[0]];
@@ -399,7 +406,7 @@ function getChallengesByKarma($player, $karmaval) {
 				$trackenv = $row['Environnement'];
 				// add clickable button
 				if ($aseco->settings['clickable_lists'])
-					$trackenv = array($trackenv, $envids[$row['Environnement']]);
+					$trackenv = array($trackenv, envids[$row['Environnement']]);
 
 				// add clickable buttons
 				if ($aseco->settings['clickable_lists'] && $tid <= 1900) {
@@ -431,24 +438,24 @@ function getChallengesByKarma($player, $karmaval) {
 			$player->msgs[] = $msg;
 	}
 
-	mysql_free_result($result);
+	$result = null;
 }  // getChallengesByKarma
 
 function getChallengesNoFinish($player) {
-	global $aseco, $jb_buffer;
+	global $aseco, $jb_buffer, $dbo;
 
 	$player->tracklist = array();
 
 	// get list of finished tracks
 	$sql = 'SELECT DISTINCT challengeID FROM rs_times
 	        WHERE playerID=' . $player->id . ' ORDER BY challengeID';
-	$result = mysql_query($sql);
+	$result = $dbo->query($sql);
 	$finished = array();
-	if (mysql_num_rows($result) > 0) {
-		while ($dbrow = mysql_fetch_array($result))
+	if ($result->rowCount() > 0) {
+		while ($dbrow = $result->fetch(PDO::FETCH_ASSOC))
 			$finished[] = $dbrow[0];
 	}
-	mysql_free_result($result);
+	$result = null;
 
 	// get list of unfinished tracks
 	// simpler but less efficient query:
@@ -458,9 +465,9 @@ function getChallengesNoFinish($player) {
 	$sql = 'SELECT uid FROM challenges';
 	if (!empty($finished))
 		$sql .= ' WHERE id NOT IN (' . implode(',', $finished) . ')';
-	$result = mysql_query($sql);
-	if (mysql_num_rows($result) == 0) {
-		mysql_free_result($result);
+	$result = $dbo->query($sql);
+	if ($result->rowCount() == 0) {
+		$result = null;
 		return;
 	}
 
@@ -475,7 +482,7 @@ function getChallengesNoFinish($player) {
 		$player->msgs = array();
 		$player->msgs[0] = 1;
 
-		while ($dbrow = mysql_fetch_array($result)) {
+		while ($dbrow = $result->fetch(PDO::FETCH_ASSOC)) {
 			// does the uid exist in the current server track list?
 			if (array_key_exists($dbrow[0], $newlist)) {
 				$row = $newlist[$dbrow[0]];
@@ -512,7 +519,7 @@ function getChallengesNoFinish($player) {
 			$player->msgs[] = $aseco->formatColors($head . $msg);
 
 	} elseif ($aseco->server->getGame() == 'TMF') {
-		$envids = array('Stadium' => 11, 'Alpine' => 12, 'Bay' => 13, 'Coast' => 14, 'Island' => 15, 'Rally' => 16, 'Speed' => 17);
+		
 		$head = 'Tracks You Haven\'t Finished:';
 		$msg = array();
 		if ($aseco->server->packmask != 'Stadium')
@@ -529,7 +536,7 @@ function getChallengesNoFinish($player) {
 		else
 			$player->msgs[0] = array(1, $head, array(1.12+$extra, 0.12, 0.6+$extra, 0.4), array('Icons128x128_1', 'NewTrack', 0.02));
 
-		while ($dbrow = mysql_fetch_array($result)) {
+		while ($dbrow = $result->fetch(PDO::FETCH_ASSOC)) {
 			// does the uid exist in the current server track list?
 			if (array_key_exists($dbrow[0], $newlist)) {
 				$row = $newlist[$dbrow[0]];
@@ -564,7 +571,7 @@ function getChallengesNoFinish($player) {
 				$trackenv = $row['Environnement'];
 				// add clickable button
 				if ($aseco->settings['clickable_lists'])
-					$trackenv = array($trackenv, $envids[$row['Environnement']]);  // action id
+					$trackenv = array($trackenv, envids[$row['Environnement']]);  // action id
 
 				if ($aseco->server->packmask != 'Stadium')
 					$msg[] = array(str_pad($tid, 3, '0', STR_PAD_LEFT) . '.',
@@ -589,24 +596,24 @@ function getChallengesNoFinish($player) {
 			$player->msgs[] = $msg;
 	}
 
-	mysql_free_result($result);
+	$result = null;
 }  // getChallengesNoFinish
 
 function getChallengesNoRank($player) {
-	global $aseco, $jb_buffer, $maxrecs;
+	global $aseco, $jb_buffer, $maxrecs, $dbo;
 
 	$player->tracklist = array();
 
 	// get list of finished tracks
 	$sql = 'SELECT DISTINCT challengeID FROM rs_times
 	        WHERE playerID=' . $player->id . ' ORDER BY challengeID';
-	$result = mysql_query($sql);
+	$result = $dbo->query($sql);
 	$finished = array();
-	if (mysql_num_rows($result) > 0) {
-		while ($dbrow = mysql_fetch_array($result))
+	if ($result->rowCount() > 0) {
+		while ($dbrow = $result->fetch(PDO::FETCH_ASSOC))
 			$finished[] = $dbrow[0];
 	}
-	mysql_free_result($result);
+	$result = null;
 
 	// get list of finished tracks
 	// simpler but less efficient query:
@@ -618,9 +625,9 @@ function getChallengesNoRank($player) {
 		$sql .= 'IN (' . implode(',', $finished) . ')';
 	else
 		$sql .= '= 0';  // empty list
-	$result = mysql_query($sql);
-	if (mysql_num_rows($result) == 0) {
-		mysql_free_result($result);
+	$result = $dbo->query($sql);
+	if ($result->rowCount() == 0) {
+		$result = null;
 		return;
 	}
 
@@ -628,17 +635,17 @@ function getChallengesNoRank($player) {
 	$unranked = array();
 	$i = 0;
 	// check if player not in top $maxrecs on each track
-	while ($dbrow = mysql_fetch_array($result)) {
+	while ($dbrow = $result->fetch(PDO::FETCH_ASSOC)) {
 		// more efficient but unsupported query: :(
 		// $sql2 = 'SELECT id FROM players WHERE (id=' . $player->id . ') AND (id NOT IN
 		//          (SELECT playerid FROM records WHERE challengeid=' . $dbrow[0] . ' ORDER by score, date LIMIT ' . $maxrecs . '))';
 		$sql2 = 'SELECT playerid FROM records
 		         WHERE challengeid=' . $dbrow[0] . '
 		         ORDER by score ' . $order . ', date ASC LIMIT ' . $maxrecs;
-		$result2 = mysql_query($sql2);
+		$result2 = $dbo->query($sql2);
 		$found = false;
-		if (mysql_num_rows($result2) > 0) {
-			while ($plrow = mysql_fetch_array($result2)) {
+		if ($result2->rowCount() > 0) {
+			while ($plrow = $result2->fetch(PDO::FETCH_ASSOC)) {
 				if ($player->id == $plrow[0]) {
 					$found = true;
 					break;
@@ -648,10 +655,10 @@ function getChallengesNoRank($player) {
 		if (!$found) {
 			$unranked[$i++] = $dbrow[1];
 		}
-		mysql_free_result($result2);
+		$result2 = null;
 	}
 	if (empty($unranked)) {
-		mysql_free_result($result);
+		$result = null;
 		return;
 	}
 
@@ -703,7 +710,7 @@ function getChallengesNoRank($player) {
 			$player->msgs[] = $aseco->formatColors($head . $msg);
 
 	} elseif ($aseco->server->getGame() == 'TMF') {
-		$envids = array('Stadium' => 11, 'Alpine' => 12, 'Bay' => 13, 'Coast' => 14, 'Island' => 15, 'Rally' => 16, 'Speed' => 17);
+		
 		$head = 'Tracks You Have No Rank On:';
 		$msg = array();
 		if ($aseco->server->packmask != 'Stadium')
@@ -755,7 +762,7 @@ function getChallengesNoRank($player) {
 				$trackenv = $row['Environnement'];
 				// add clickable button
 				if ($aseco->settings['clickable_lists'])
-					$trackenv = array($trackenv, $envids[$row['Environnement']]);  // action id
+					$trackenv = array($trackenv, envids[$row['Environnement']]);  // action id
 
 				if ($aseco->server->packmask != 'Stadium')
 					$msg[] = array(str_pad($tid, 3, '0', STR_PAD_LEFT) . '.',
@@ -780,11 +787,11 @@ function getChallengesNoRank($player) {
 			$player->msgs[] = $msg;
 	}
 
-	mysql_free_result($result);
+	$result = null;
 }  // getChallengesNoRank
 
 function getChallengesNoGold($player) {
-	global $aseco, $jb_buffer;
+	global $aseco, $jb_buffer, $dbo;
 
 	$player->tracklist = array();
 
@@ -796,9 +803,9 @@ function getChallengesNoGold($player) {
 		        WHERE (playerID=' . $player->id . ' AND t1.challengeID=c.id AND
 		               score=(SELECT MIN(t2.score) FROM rs_times t2
 		                      WHERE playerID=' . $player->id . ' AND t1.challengeID=t2.challengeID))';
-		$result = mysql_query($sql);
-		if (mysql_num_rows($result) == 0) {
-			mysql_free_result($result);
+		$result = $dbo->query($sql);
+		if ($result->rowCount() == 0) {
+			$result = null;
 			return;
 		}
 
@@ -813,7 +820,7 @@ function getChallengesNoGold($player) {
 			$player->msgs = array();
 			$player->msgs[0] = 1;
 
-			while ($dbrow = mysql_fetch_array($result)) {
+			while ($dbrow = $result->fetch(PDO::FETCH_ASSOC)) {
 				// does the uid exist in the current server track list?
 				if (array_key_exists($dbrow[0], $newlist)) {
 					$row = $newlist[$dbrow[0]];
@@ -858,7 +865,7 @@ function getChallengesNoGold($player) {
 				$player->msgs[] = $aseco->formatColors($head . $msg);
 
 		} elseif ($aseco->server->getGame() == 'TMF') {
-			$envids = array('Stadium' => 11, 'Alpine' => 12, 'Bay' => 13, 'Coast' => 14, 'Island' => 15, 'Rally' => 16, 'Speed' => 17);
+			
 			$head = 'Tracks You Didn\'t Beat Gold Time On:';
 			$msg = array();
 			if ($aseco->server->packmask != 'Stadium')
@@ -875,7 +882,7 @@ function getChallengesNoGold($player) {
 			else
 				$player->msgs[0] = array(1, $head, array(1.27+$extra, 0.12, 0.6+$extra, 0.4, 0.15), array('Icons128x128_1', 'NewTrack', 0.02));
 
-			while ($dbrow = mysql_fetch_array($result)) {
+			while ($dbrow = $result->fetch(PDO::FETCH_ASSOC)) {
 				// does the uid exist in the current server track list?
 				if (array_key_exists($dbrow[0], $newlist)) {
 					$row = $newlist[$dbrow[0]];
@@ -912,7 +919,7 @@ function getChallengesNoGold($player) {
 						$trackenv = $row['Environnement'];
 						// add clickable button
 						if ($aseco->settings['clickable_lists'])
-							$trackenv = array($trackenv, $envids[$row['Environnement']]);  // action id
+							$trackenv = array($trackenv, envids[$row['Environnement']]);  // action id
 
 						// compute difference to Gold time
 						$diff = $dbrow[1] - $row['GoldTime'];
@@ -952,9 +959,9 @@ function getChallengesNoGold($player) {
 		        WHERE (playerID=' . $player->id . ' AND t1.challengeID=c.id AND
 		               score=(SELECT MAX(t2.score) FROM rs_times t2
 		                      WHERE playerID=' . $player->id . ' AND t1.challengeID=t2.challengeID))';
-		$result = mysql_query($sql);
-		if (mysql_num_rows($result) == 0) {
-			mysql_free_result($result);
+		$result = $dbo->query($sql);
+		if ($result->rowCount() == 0) {
+			$result = null;
 			return;
 		}
 
@@ -973,7 +980,7 @@ function getChallengesNoGold($player) {
 			$extra = ($aseco->settings['lists_colortracks'] ? 0.2 : 0);
 			$player->msgs[0] = array(1, $head, array(1.42+$extra, 0.12, 0.6+$extra, 0.4, 0.15, 0.15), array('Icons128x128_1', 'NewTrack', 0.02));
 
-			while ($dbrow = mysql_fetch_array($result)) {
+			while ($dbrow = $result->fetch(PDO::FETCH_ASSOC)) {
 				// does the uid exist in the current server track list?
 				if (array_key_exists($dbrow[0], $newlist)) {
 					$row = $newlist[$dbrow[0]];
@@ -1010,7 +1017,7 @@ function getChallengesNoGold($player) {
 						$trackenv = $row['Environnement'];
 						// add clickable button
 						if ($aseco->settings['clickable_lists'])
-							$trackenv = array($trackenv, $envids[$row['Environnement']]);  // action id
+							$trackenv = array($trackenv, envids[$row['Environnement']]);  // action id
 
 						// compute difference to Gold score
 						$diff = $row['GoldTime'] - $dbrow[1];
@@ -1034,11 +1041,11 @@ function getChallengesNoGold($player) {
 		}
 	}
 
-	mysql_free_result($result);
+	$result = null;
 }  // getChallengesNoGold
 
 function getChallengesNoAuthor($player) {
-	global $aseco, $jb_buffer;
+	global $aseco, $jb_buffer, $dbo;
 
 	$player->tracklist = array();
 
@@ -1050,9 +1057,9 @@ function getChallengesNoAuthor($player) {
 		        WHERE (playerID=' . $player->id . ' AND t1.challengeID=c.id AND
 		               score=(SELECT MIN(t2.score) FROM rs_times t2
 		                      WHERE playerID=' . $player->id . ' AND t1.challengeID=t2.challengeID))';
-		$result = mysql_query($sql);
-		if (mysql_num_rows($result) == 0) {
-			mysql_free_result($result);
+		$result = $dbo->query($sql);
+		if ($result->rowCount() == 0) {
+			$result = null;
 			return;
 		}
 
@@ -1067,7 +1074,7 @@ function getChallengesNoAuthor($player) {
 			$player->msgs = array();
 			$player->msgs[0] = 1;
 
-			while ($dbrow = mysql_fetch_array($result)) {
+			while ($dbrow = $result->fetch(PDO::FETCH_ASSOC)) {
 				// does the uid exist in the current server track list?
 				if (array_key_exists($dbrow[0], $newlist)) {
 					$row = $newlist[$dbrow[0]];
@@ -1112,7 +1119,7 @@ function getChallengesNoAuthor($player) {
 				$player->msgs[] = $aseco->formatColors($head . $msg);
 
 		} elseif ($aseco->server->getGame() == 'TMF') {
-			$envids = array('Stadium' => 11, 'Alpine' => 12, 'Bay' => 13, 'Coast' => 14, 'Island' => 15, 'Rally' => 16, 'Speed' => 17);
+			
 			$head = 'Tracks You Didn\'t Beat Author Time On:';
 			$msg = array();
 			if ($aseco->server->packmask != 'Stadium')
@@ -1129,7 +1136,7 @@ function getChallengesNoAuthor($player) {
 			else
 				$player->msgs[0] = array(1, $head, array(1.27+$extra, 0.12, 0.6+$extra, 0.4, 0.15), array('Icons128x128_1', 'NewTrack', 0.02));
 
-			while ($dbrow = mysql_fetch_array($result)) {
+			while ($dbrow = $result->fetch(PDO::FETCH_ASSOC)) {
 				// does the uid exist in the current server track list?
 				if (array_key_exists($dbrow[0], $newlist)) {
 					$row = $newlist[$dbrow[0]];
@@ -1166,7 +1173,7 @@ function getChallengesNoAuthor($player) {
 						$trackenv = $row['Environnement'];
 						// add clickable button
 						if ($aseco->settings['clickable_lists'])
-							$trackenv = array($trackenv, $envids[$row['Environnement']]);  // action id
+							$trackenv = array($trackenv, envids[$row['Environnement']]);  // action id
 
 						// compute difference to Author time
 						$diff = $dbrow[1] - $row['AuthorTime'];
@@ -1206,9 +1213,9 @@ function getChallengesNoAuthor($player) {
 		        WHERE (playerID=' . $player->id . ' AND t1.challengeID=c.id AND
 		               score=(SELECT MAX(t2.score) FROM rs_times t2
 		                      WHERE playerID=' . $player->id . ' AND t1.challengeID=t2.challengeID))';
-		$result = mysql_query($sql);
-		if (mysql_num_rows($result) == 0) {
-			mysql_free_result($result);
+		$result = $dbo->query($sql);
+		if ($result->rowCount() == 0) {
+			$result = null;
 			return;
 		}
 
@@ -1227,7 +1234,7 @@ function getChallengesNoAuthor($player) {
 			$extra = ($aseco->settings['lists_colortracks'] ? 0.2 : 0);
 			$player->msgs[0] = array(1, $head, array(1.42+$extra, 0.12, 0.6+$extra, 0.4, 0.15, 0.15), array('Icons128x128_1', 'NewTrack', 0.02));
 
-			while ($dbrow = mysql_fetch_array($result)) {
+			while ($dbrow = $result->fetch(PDO::FETCH_ASSOC)) {
 				// does the uid exist in the current server track list?
 				if (array_key_exists($dbrow[0], $newlist)) {
 					$row = $newlist[$dbrow[0]];
@@ -1264,7 +1271,7 @@ function getChallengesNoAuthor($player) {
 						$trackenv = $row['Environnement'];
 						// add clickable button
 						if ($aseco->settings['clickable_lists'])
-							$trackenv = array($trackenv, $envids[$row['Environnement']]);  // action id
+							$trackenv = array($trackenv, envids[$row['Environnement']]);  // action id
 
 						// compute difference to Author score
 						$diff = $row['AuthorScore'] - $dbrow[1];
@@ -1288,12 +1295,12 @@ function getChallengesNoAuthor($player) {
 		}
 	}
 
-	mysql_free_result($result);
+	$result = null;
 }  // getChallengesNoAuthor
 
 // calls function get_recs() from chat.records2.php
 function getChallengesNoRecent($player) {
-	global $aseco, $jb_buffer, $maxrecs;
+	global $aseco, $jb_buffer, $maxrecs, $dbo;
 
 	$player->tracklist = array();
 
@@ -1303,9 +1310,9 @@ function getChallengesNoRecent($player) {
 	               date=(SELECT MAX(t2.date) FROM rs_times t2
 	                     WHERE playerID=' . $player->id . ' AND t1.challengeID=t2.challengeID))
 	        ORDER BY t1.date';
-	$result = mysql_query($sql);
-	if (mysql_num_rows($result) == 0) {
-		mysql_free_result($result);
+	$result = $dbo->query($sql);
+	if ($result->rowCount() == 0) {
+		$result = null;
 		return;
 	}
 
@@ -1322,7 +1329,7 @@ function getChallengesNoRecent($player) {
 		$player->msgs = array();
 		$player->msgs[0] = 1;
 
-		while ($dbrow = mysql_fetch_array($result)) {
+		while ($dbrow = $result->fetch(PDO::FETCH_ASSOC)) {
 			// does the uid exist in the current server track list?
 			if (array_key_exists($dbrow[0], $newlist)) {
 				$row = $newlist[$dbrow[0]];
@@ -1363,7 +1370,7 @@ function getChallengesNoRecent($player) {
 			$player->msgs[] = $aseco->formatColors($head . $msg);
 
 	} elseif ($aseco->server->getGame() == 'TMF') {
-		$envids = array('Stadium' => 11, 'Alpine' => 12, 'Bay' => 13, 'Coast' => 14, 'Island' => 15, 'Rally' => 16, 'Speed' => 17);
+		
 		$head = 'Tracks You Didn\'t Play Recently:';
 		$msg = array();
 		if ($aseco->server->packmask != 'Stadium')
@@ -1380,7 +1387,7 @@ function getChallengesNoRecent($player) {
 		else
 			$player->msgs[0] = array(1, $head, array(1.43+$extra, 0.12, 0.1, 0.6+$extra, 0.4, 0.21), array('Icons128x128_1', 'NewTrack', 0.02));
 
-		while ($dbrow = mysql_fetch_array($result)) {
+		while ($dbrow = $result->fetch(PDO::FETCH_ASSOC)) {
 			// does the uid exist in the current server track list?
 			if (array_key_exists($dbrow[0], $newlist)) {
 				$row = $newlist[$dbrow[0]];
@@ -1415,7 +1422,7 @@ function getChallengesNoRecent($player) {
 				$trackenv = $row['Environnement'];
 				// add clickable button
 				if ($aseco->settings['clickable_lists'])
-					$trackenv = array($trackenv, $envids[$row['Environnement']]);  // action id
+					$trackenv = array($trackenv, envids[$row['Environnement']]);  // action id
 
 				// get corresponding record
 				$pos = isset($reclist[$dbrow[0]]) ? $reclist[$dbrow[0]] : 0;
@@ -1446,7 +1453,7 @@ function getChallengesNoRecent($player) {
 			$player->msgs[] = $msg;
 	}
 
-	mysql_free_result($result);
+	$result = null;
 }  // getChallengesNoRecent
 
 function getChallengesByLength($player, $order) {
@@ -1510,7 +1517,7 @@ function getChallengesByLength($player, $order) {
 			$player->msgs[] = $aseco->formatColors($head . $msg);
 
 	} elseif ($aseco->server->getGame() == 'TMF') {
-		$envids = array('Stadium' => 11, 'Alpine' => 12, 'Bay' => 13, 'Coast' => 14, 'Island' => 15, 'Rally' => 16, 'Speed' => 17);
+		
 		$head = ($order ? 'Shortest' : 'Longest') . ' Tracks On This Server:';
 		$msg = array();
 		if ($aseco->server->packmask != 'Stadium')
@@ -1560,7 +1567,7 @@ function getChallengesByLength($player, $order) {
 			$trackenv = $row['Environnement'];
 			// add clickable button
 			if ($aseco->settings['clickable_lists'])
-				$trackenv = array($trackenv, $envids[$row['Environnement']]);  // action id
+				$trackenv = array($trackenv, envids[$row['Environnement']]);  // action id
 
 			if ($aseco->server->packmask != 'Stadium')
 				$msg[] = array(str_pad($tid, 3, '0', STR_PAD_LEFT) . '.',
@@ -1586,16 +1593,16 @@ function getChallengesByLength($player, $order) {
 }  // getChallengesByLength
 
 function getChallengesByAdd($player, $order, $count) {
-	global $aseco, $jb_buffer;
+	global $aseco, $jb_buffer, $dbo;
 
 	$player->tracklist = array();
 
 	// get list of tracks in reverse order of addition
 	$sql = 'SELECT uid FROM challenges
 	        ORDER BY id ' . ($order ? 'DESC' : 'ASC');
-	$result = mysql_query($sql);
-	if (mysql_num_rows($result) == 0) {
-		mysql_free_result($result);
+	$result = $dbo->query($sql);
+	if ($result->rowCount() == 0) {
+		$result = null;
 		return;
 	}
 
@@ -1611,7 +1618,7 @@ function getChallengesByAdd($player, $order, $count) {
 		$player->msgs = array();
 		$player->msgs[0] = 1;
 
-		while ($dbrow = mysql_fetch_array($result)) {
+		while ($dbrow = $result->fetch(PDO::FETCH_ASSOC)) {
 			// does the uid exist in the current server track list?
 			if (array_key_exists($dbrow[0], $newlist)) {
 				$row = $newlist[$dbrow[0]];
@@ -1650,7 +1657,7 @@ function getChallengesByAdd($player, $order, $count) {
 			$player->msgs[] = $aseco->formatColors($head . $msg);
 
 	} elseif ($aseco->server->getGame() == 'TMF') {
-		$envids = array('Stadium' => 11, 'Alpine' => 12, 'Bay' => 13, 'Coast' => 14, 'Island' => 15, 'Rally' => 16, 'Speed' => 17);
+		
 		$head = ($order ? 'Newest' : 'Oldest') . ' Tracks On This Server:';
 		$msg = array();
 		if ($aseco->server->packmask != 'Stadium')
@@ -1667,7 +1674,7 @@ function getChallengesByAdd($player, $order, $count) {
 		else
 			$player->msgs[0] = array(1, $head, array(1.12+$extra, 0.12, 0.6+$extra, 0.4), array('Icons128x128_1', 'NewTrack', 0.02));
 
-		while ($dbrow = mysql_fetch_array($result)) {
+		while ($dbrow = $result->fetch(PDO::FETCH_ASSOC)) {
 			// does the uid exist in the current server track list?
 			if (array_key_exists($dbrow[0], $newlist)) {
 				$row = $newlist[$dbrow[0]];
@@ -1702,7 +1709,7 @@ function getChallengesByAdd($player, $order, $count) {
 				$trackenv = $row['Environnement'];
 				// add clickable button
 				if ($aseco->settings['clickable_lists'])
-					$trackenv = array($trackenv, $envids[$row['Environnement']]);  // action id
+					$trackenv = array($trackenv, envids[$row['Environnement']]);  // action id
 
 				if ($aseco->server->packmask != 'Stadium')
 					$msg[] =  array(str_pad($tid, 3, '0', STR_PAD_LEFT) . '.',
@@ -1729,11 +1736,11 @@ function getChallengesByAdd($player, $order, $count) {
 			$player->msgs[] = $msg;
 	}
 
-	mysql_free_result($result);
+	$result = null;
 }  // getChallengesByAdd
 
 function getChallengesNoVote($player) {
-	global $aseco, $jb_buffer, $maxrecs;
+	global $aseco, $jb_buffer, $maxrecs, $dbo;
 
 	$player->tracklist = array();
 
@@ -1746,12 +1753,12 @@ function getChallengesNoVote($player) {
 	// get list of voted tracks and remove those
 	$sql = 'SELECT uid FROM challenges c, rs_karma k
 	        WHERE c.id=k.challengeID AND k.playerID=' . $player->id;
-	$result = mysql_query($sql);
-	if (mysql_num_rows($result) > 0) {
-		while ($dbrow = mysql_fetch_array($result))
+	$result = $dbo->query($sql);
+	if ($result->rowCount() > 0) {
+		while ($dbrow = $result->fetch(PDO::FETCH_ASSOC))
 			unset($newlist[$dbrow[0]]);
 	}
-	mysql_free_result($result);
+	$result = null;
 
 	if ($aseco->server->getGame() == 'TMN') {
 		$head = 'Tracks You Didn\'t Vote For:' . LF . 'Id        Rec   Name' . LF;
@@ -1798,7 +1805,7 @@ function getChallengesNoVote($player) {
 			$player->msgs[] = $aseco->formatColors($head . $msg);
 
 	} elseif ($aseco->server->getGame() == 'TMF') {
-		$envids = array('Stadium' => 11, 'Alpine' => 12, 'Bay' => 13, 'Coast' => 14, 'Island' => 15, 'Rally' => 16, 'Speed' => 17);
+		
 		$head = 'Tracks You Didn\'t Vote For:';
 		$msg = array();
 		if ($aseco->server->packmask != 'Stadium')
@@ -1847,7 +1854,7 @@ function getChallengesNoVote($player) {
 			$trackenv = $row['Environnement'];
 			// add clickable button
 			if ($aseco->settings['clickable_lists'])
-				$trackenv = array($trackenv, $envids[$row['Environnement']]);  // action id
+				$trackenv = array($trackenv, envids[$row['Environnement']]);  // action id
 
 			// get corresponding record
 			$pos = isset($reclist[$row['UId']]) ? $reclist[$row['UId']] : 0;

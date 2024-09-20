@@ -1,5 +1,6 @@
 <?php
 /* vim: set noexpandtab tabstop=2 softtabstop=2 shiftwidth=2: */
+global $aseco;
 
 /**
  * Track plugin.
@@ -9,14 +10,14 @@
  * Dependencies: used by plugin.rasp_jukebox.php, plugin.rasp_votes.php
  */
 
-Aseco::registerEvent('onNewChallenge', 'time_gameinfo');
-Aseco::registerEvent('onNewChallenge2', 'time_newtrack');  // use 2nd event to start timer just before racing commences
-Aseco::registerEvent('onEndRace', 'time_endrace');
-Aseco::registerEvent('onSync', 'time_initreplays');
+$aseco->registerEvent('onNewChallenge', 'time_gameinfo');
+$aseco->registerEvent('onNewChallenge2', 'time_newtrack');  // use 2nd event to start timer just before racing commences
+$aseco->registerEvent('onEndRace', 'time_endrace');
+$aseco->registerEvent('onSync', 'time_initreplays');
 
-Aseco::addChatCommand('track', 'Shows info about the current track');
-Aseco::addChatCommand('playtime', 'Shows time current track has been playing');
-Aseco::addChatCommand('time', 'Shows current server time & date');
+$aseco->addChatCommand('track', 'Shows info about the current track');
+$aseco->addChatCommand('playtime', 'Shows time current track has been playing');
+$aseco->addChatCommand('time', 'Shows current server time & date');
 
 function chat_track($aseco, $command) {
 
