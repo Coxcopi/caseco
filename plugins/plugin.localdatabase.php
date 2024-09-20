@@ -309,8 +309,6 @@ function ldb_playerConnect($aseco, $player) {
 	$result = $dbo->query($query);
 
 	if ($result === false) {
-		if ($result !== false)
-			$result = null;
 		trigger_error('Could not get stats of connecting player! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		return;
 	}
@@ -370,8 +368,6 @@ function ldb_playerConnect($aseco, $player) {
 			$query = 'SELECT LAST_INSERT_ID() FROM players';
 			$result = $dbo->query($query);
 			if ($result === false) {
-				if ($result !== false)
-					$result = null;
 				trigger_error('Could not get inserted player\'s id! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 				return;
 			} else {
@@ -388,8 +384,6 @@ function ldb_playerConnect($aseco, $player) {
 	$result = $dbo->query($query);
 
 	if ($result === false) {
-		if ($result !== false)
-			$result = null;
 		trigger_error('Could not get player\'s extra data! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		return;
 	}
@@ -451,8 +445,6 @@ function ldb_getDonations($aseco, $login) {
 	$result = $dbo->query($query);
 
 	if ($result === false) {
-		if ($result !== false)
-			$result = null;
 		trigger_error('Could not get player\'s donations! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		return false;
 	} else {
@@ -486,8 +478,6 @@ function ldb_getCPs($aseco, $login) {
 	$result = $dbo->query($query);
 
 	if ($result === false) {
-		if ($result !== false)
-			$result = null;
 		trigger_error('Could not get player\'s CPs! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		return false;
 	} else {
@@ -520,8 +510,6 @@ function ldb_getStyle($aseco, $login) {
 	$result = $dbo->query($query);
 
 	if ($result === false) {
-		if ($result !== false)
-			$result = null;
 		trigger_error('Could not get player\'s style! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		return false;
 	} else {
@@ -554,8 +542,6 @@ function ldb_getPanels($aseco, $login) {
 	$result = $dbo->query($query);
 
 	if ($result === false) {
-		if ($result !== false)
-			$result = null;
 		trigger_error('Could not get player\'s panels! (' . errInfo2text($result->errorInfo()) . ')' . CRLF . 'sql = ' . $query, E_USER_WARNING);
 		return false;
 	} else {
