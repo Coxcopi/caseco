@@ -744,7 +744,7 @@ class FufiWidgets extends Plugin {
 					$this->Aseco->console('[FufiWidgets] Unable to retrieve challenge ID for Karma widget');
 					return;
 				} else {
-					$dbid = $dbo->fetchColumn();
+					$dbid = $res->fetchColumn();
 				}
 			}
 		}
@@ -2391,7 +2391,7 @@ class FufiWidgets extends Plugin {
 			$query = 'select Id from challenges where Uid ="'.$this->xasecoChallenge->uid.'"';
 			$res = $dbo->query($query);
 			if ($res->rowCount() == 1){
-				$this->xasecoChallenge->id = $dbo->fetchColumn();
+				$this->xasecoChallenge->id = $res->fetchColumn();
 			}
 
 		}
