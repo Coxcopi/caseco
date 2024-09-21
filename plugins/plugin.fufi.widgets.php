@@ -1989,7 +1989,7 @@ class FufiWidgets extends Plugin {
 	function hideWidget($id, $login=''){
 
 		$page = '';
-		if (count($id)>1){
+		if ((gettype($id) == "array" || gettype($id) == "object") && count($id)>1){
 			foreach ($id as $mlid){
 				$page.='<manialink id="'.$mlid.'"></manialink>';
 			}
