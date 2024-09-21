@@ -106,18 +106,12 @@
 
 $fufiWidgetsVersion = '0.80b';
 
-if (!defined('IN_XASECO')){
-	if (defined('XASECO_VERSION')){
-		define('IN_XASECO', true);
-	} else {
-		define('IN_XASECO', false);
-	}
-}
+define("IN_XASECO", true);
 
 class CTUPlayer {
 	var $login;
 	var $nickname;
-	function CTUPlayer($nickname, $login){
+	function __construct($nickname, $login){
 		$this->login = $login;
 		$this->nickname = $nickname;
 	}
@@ -836,7 +830,7 @@ class FufiWidgets extends Plugin {
 		//get player specific karma votes from the database
 		$query = 'select * from rs_karma where ChallengeId='.$dbid;
 		$res = $dbo->query($query);
-		$res->fetchAll(PDO::FETCH_COLUMN);
+		//$res->fetchAll(PDO::FETCH_COLUMN);
 		$votes = array();
 
 		for ($i=0; $i<$res->rowCount(); $i++){
@@ -1097,7 +1091,7 @@ class FufiWidgets extends Plugin {
 	 * Creates a hash value out of a Close2You entry
 	 *
 	 * @param array $arr
-	 * 	@return a md5 hash string
+	 * 	@return String a md5 hash string
 	 */		
 	function ctuHash($arr){
 		$result = "";
@@ -2184,7 +2178,6 @@ class FufiWidgets extends Plugin {
 				$rec["score"] = $recAseco->score;
 				$records[]=$rec;
 			}
-
 		} else {
 			for ($i=0; $i<$this->Aseco->records->count(); $i++){
 				$records[$i] = array();
