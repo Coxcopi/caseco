@@ -127,7 +127,7 @@ function chat_stats($aseco, $command) {
 		// obtain last online timestamp
 		$query = 'SELECT UpdatedAt FROM players
 		          WHERE login=' . quotedString($target->login);
-		$result = $pdo->query($query);
+		$result = $dbo->query($query);
 		$laston = $result->fetch(PDO::FETCH_NUM);
 		$result = null;
 
