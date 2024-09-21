@@ -2018,7 +2018,7 @@ class FufiWidgets extends Plugin {
 		$titlebar = $this->settings['sblwidget']['blocks']['title'];
 
 		foreach ($this->settings['sblwidget']['lists'] as $list){
-			$entryList = call_user_func('get'.$list['content'].'List', $this, $list['entrycount']);
+			$entryList = call_user_func([$this, 'get'.$list['content'].'List'], $list['entrycount']);
 			if ($entryList){
 				$showPoints = $this->getShowPoints($list['content']);
 				$xmlcontent.='<frame posn="'.$list['pos'].'">';
